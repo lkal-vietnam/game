@@ -31,6 +31,8 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 - [x] Mức nguy hiểm từng nơi, nơi sinh ngẫu nhiên
 - [x] Đột phá tốn linh thạch, làm thuê kiếm linh thạch, càng lên cao càng khó
 - [x] Nhân vật nam và nữ mặc định (hình tạm)
+- [x] Thiên Nam Đại Lục: năm quốc gia liền nhau, 12 thành thị, quan ải, cảng ra đảo (64 địa danh)
+- [ ] Thay hình nhân vật bằng ảnh do công cụ AI vẽ (mô tả ở docs/NHAN-VAT.md)
 - [x] Di chuyển theo đường nối, lịch trôi theo số ngày đi
 - [x] Bế quan theo tháng, linh khí khác nhau từng nơi
 - [x] Tuổi thọ, kết thúc kiếp, nhận điểm luân hồi
@@ -45,7 +47,8 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 
 - [ ] Màn hình trận đấu một đấu một
 - [ ] Đánh thường, kỹ năng, phòng thủ
-- [ ] Dị thú ở Hắc Thủy và Cúc Phương
+- [ ] Dị thú ở các vùng dị thú; gặp dị thú và người tu luyện khác trên đường
+- [ ] Cân lại độ khó (tỉ lệ bị tập kích, bỏ mạng) sau khi có chiến đấu
 - [ ] Phần thưởng sau trận: linh thạch, nguyên liệu
 
 ## M4 — Điểm luân hồi, linh thạch, giải đố

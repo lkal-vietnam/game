@@ -80,7 +80,7 @@ function rollOrigin(rng: () => number): Origin {
   return ORIGINS[0];
 }
 
-const BIRTH_TYPES: PlaceType[] = ['home', 'village', 'market', 'port'];
+const BIRTH_TYPES: PlaceType[] = ['home', 'village', 'market', 'port', 'city'];
 
 /**
  * Nơi sinh ngẫu nhiên trên khắp thế giới. Nơi càng nguy hiểm càng hiếm gặp,
@@ -170,7 +170,7 @@ export function canAttempt(life: Life): boolean {
   return canAdvance(life) && life.linhThach >= breakthroughCost(life);
 }
 
-const WORK_TYPES: PlaceType[] = ['home', 'market', 'port', 'village', 'station', 'guild', 'dojo'];
+const WORK_TYPES: PlaceType[] = ['home', 'market', 'port', 'village', 'station', 'guild', 'dojo', 'city', 'pass'];
 const WORK_PAY = 12;
 
 export function canWorkAt(place: Place): boolean {

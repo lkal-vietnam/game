@@ -7,17 +7,17 @@ Tài liệu này dành cho người viết thêm sự kiện cho game. Không c�
 - **Thể loại:** tu tiên pha hiện đại. Linh khí quay trở lại giữa thời đại có tàu điện, điện thoại và nhà cao tầng.
 - **Ba con đường:** tu tiên (hấp thụ linh khí, pháp thuật), dị năng (thức tỉnh năng lực riêng nhờ dị hạch), thể tu (rèn thân thể).
 - **Nhân vật:** người chơi sống từng kiếp. Mỗi kiếp bắt đầu là một đứa trẻ phàm nhân 12 tuổi ở Lạc Thành, tu luyện, đi khắp nơi tìm kỳ ngộ, rồi hết thọ và luân hồi.
-- **Thế giới:** nhiều vùng đất, mỗi nơi có mức nguy hiểm riêng.
+- **Thế giới:** Thiên Nam Đại Lục gồm năm quốc gia liền nhau, quanh đó là các đảo. Mỗi nơi có mức nguy hiểm riêng.
 
-| Vùng đất | Cảnh sắc | Địa danh tiêu biểu |
+| Quốc gia / đảo | Cảnh sắc | Địa danh tiêu biểu |
 | --- | --- | --- |
-| Lạc Việt Châu | Thành phố hiện đại Lạc Thành, quanh là núi, rừng, đất hoang | Ngõ Hàng Mây, Chợ đêm Đồng Xuân, Đạo quán Yên Tử, Động Phong Nha |
-| Bắc Băng Nguyên | Tuyết và núi băng | Làng Sa Pa, Đỉnh Phan Xi Păng, Băng cung Mẫu Sơn |
-| Tây Mạc | Sa mạc, ốc đảo, tháp cổ | Ốc đảo Phan Rang, Tháp cổ Pô Na Ga, Bí cảnh Cát Vàng |
+| Lạc Việt Quốc | Thành phố hiện đại Lạc Thành, quanh là núi, rừng, đất hoang | Ngõ Hàng Mây, Chợ đêm Đồng Xuân, Thành Vinh, Đạo quán Yên Tử, Động Phong Nha |
+| Bắc Băng Quốc | Tuyết và núi băng | Băng thành Lạng Sơn, Làng Sa Pa, Đỉnh Phan Xi Păng |
+| Tây Mạc Quốc | Sa mạc, ốc đảo, tháp cổ | Sa đô Ninh Thuận, Ốc đảo Phan Rang, Tháp cổ Pô Na Ga |
 | Quần đảo Đông Hải | Đảo, làng chài, núi lửa đã tắt | Bến Cát Bà, Làng chài Lý Sơn, Ngục Côn Lôn |
-| Nam Hoang | Rừng rậm, đầm lầy, núi lửa | Làng U Minh, Hỏa sơn Chư Đăng Ya, Hang Sơn Đoòng |
-| Đông Sơn Châu | Cao nguyên, núi đá, cố đô | Cố đô Hoa Lư, Kiếm các Tam Đảo, Bí cảnh Tràng An |
-| Xích Diệm Châu | Đất núi lửa, sông dung nham | Lò rèn Bát Tràng, Núi Bà Đen, Hỏa ngục Chư Prông |
+| Nam Hoang Quốc | Rừng rậm, đầm lầy, núi lửa | Thành Cần Thơ, Làng U Minh, Hang Sơn Đoòng |
+| Đông Sơn Quốc | Cao nguyên, núi đá, cố đô | Cố đô Hoa Lư, Kiếm các Tam Đảo, Bí cảnh Tràng An |
+| Xích Diệm Đảo | Đất núi lửa, sông dung nham | Lò rèn Bát Tràng, Núi Bà Đen, Hỏa ngục Chư Prông |
 
 - **Từ ngữ:** dùng "pháp thuật", không dùng "phép". Tiền tệ là "linh thạch". Quái vật gọi là "dị thú".
 
@@ -96,6 +96,8 @@ Mỗi kết quả (`ok`, `fail`) gồm:
 | `port` | Bến thuyền | Bến Hạ Long, Cảng An Thới |
 | `village` | Thôn làng | Làng Sa Pa, Làng U Minh |
 | `ruin` | Di tích | Tháp cổ Pô Na Ga, Ngục Côn Lôn |
+| `city` | Thành thị | Cố đô Hoa Lư, Thành Cần Thơ, Băng thành Lạng Sơn |
+| `pass` | Quan ải ở biên giới | Ải Hạ Long, Ải Vân Đồn |
 
 Một sự kiện ghi nhiều loại thì có thể xuất hiện ở bất kỳ địa danh nào thuộc các loại đó, ở mọi vùng đất. Vì vậy trong lời văn nên tránh nhắc tên một địa danh cụ thể, trừ khi sự kiện chỉ hợp với đúng một nơi.
 

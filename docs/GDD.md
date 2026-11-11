@@ -149,19 +149,21 @@ Tỉ lệ quay là con số tạm, sẽ chỉnh khi chơi thử.
 
 - Bản đồ rộng, các chấm là địa điểm cần đến. Di chuyển chỉ làm lịch trong game trôi, không phải chờ thời gian thật.
 - Thành phố hư cấu **Lạc Thành**, địa danh mượn tên đẹp ở Việt Nam.
-- Thế giới rộng, nhiều châu lục. Hiện có bảy vùng đất và hai đảo lẻ với 51 địa danh, nối bằng đường bộ và đường biển qua các bến thuyền.
+- Thế giới có một đại lục rõ ràng, **Thiên Nam Đại Lục**, gồm năm quốc gia liền nhau, mỗi nước có kinh đô và thành thị riêng. Quanh đại lục là các đảo.
+- Trong đại lục đi đường bộ, qua các quan ải ở biên giới. Ra đảo phải đi thuyền từ các cảng.
 - Phóng to thu nhỏ bằng hai ngón tay hoặc con lăn chuột. Nút "Toàn cảnh" thu nhỏ để thấy cả thế giới; khi nhìn xa, chạm vào đâu thì bay tới đó.
+- Hiện có 64 địa danh.
 
-| Vùng đất | Cảnh sắc | Địa danh |
-| --- | --- | --- |
-| Lạc Việt Châu | Lạc Thành, núi Yên Tử, rừng Cúc Phương, đất hoang Hắc Thủy | Ngõ Hàng Mây, Chợ đêm Đồng Xuân, Ga Long Biên, Hồ Tịnh Tâm, Tháp Bạch Mã, Võ quán Tây Sơn, Khu xưởng Hắc Thủy, Đạo quán Yên Tử, Rừng Cúc Phương, Động Phong Nha, và bốn bến: Hạ Long, Hải Vân, Cửa Lò, Cà Mau |
-| Bắc Băng Nguyên | Tuyết, núi băng | Bến Băng Hà, Làng Sa Pa, Đỉnh Phan Xi Păng, Băng cung Mẫu Sơn, Hồ Ba Bể |
-| Tây Mạc | Sa mạc | Bến Mũi Né, Ốc đảo Phan Rang, Tháp cổ Pô Na Ga, Sào huyệt Sa Trùng, Bí cảnh Cát Vàng |
-| Quần đảo Đông Hải | Bốn đảo | Bến Cát Bà, Động Thiên Cung, Làng chài Lý Sơn, Miệng núi Thới Lới, Cảng An Thới, Rừng Hàm Ninh, Ngục Côn Lôn |
-| Nam Hoang | Rừng rậm, núi lửa | Bến Rạch Giá, Làng U Minh, Rừng tràm U Minh Hạ, Hỏa sơn Chư Đăng Ya, Hang Sơn Đoòng |
-| Đông Sơn Châu | Cao nguyên, núi đá, cố đô | Bến Vân Đồn, Cố đô Hoa Lư, Làng Mộc Châu, Kiếm các Tam Đảo, Hồ Núi Cốc, Cổ tự Bái Đính, Bí cảnh Tràng An, Bến Sầm Sơn |
-| Xích Diệm Châu | Đất núi lửa, sông dung nham | Bến Hòn Khói, Làng Cù Lao, Lò rèn Bát Tràng, Núi Bà Đen, Hỏa ngục Chư Prông |
-| Đảo lẻ | | Hải đăng Bạch Long Vĩ, Thủy trại Hòn Tre |
+| Quốc gia / đảo | Cảnh sắc | Thành thị | Địa danh khác |
+| --- | --- | --- | --- |
+| Lạc Việt Quốc (trung tâm) | Thành phố hiện đại, núi, rừng | Lạc Thành (kinh đô), Thành Vinh, Cố thành Huế | Đạo quán Yên Tử, Rừng Cúc Phương, Động Phong Nha, Khu xưởng Hắc Thủy, bốn quan ải |
+| Bắc Băng Quốc (bắc) | Tuyết, núi băng | Băng thành Lạng Sơn (kinh đô), Thành Điện Biên | Làng Sa Pa, Đỉnh Phan Xi Păng, Băng cung Mẫu Sơn, Hồ Ba Bể, Cảng Cửa Ông |
+| Tây Mạc Quốc (tây) | Sa mạc | Sa đô Ninh Thuận (kinh đô), Thành Tuy Hòa | Ốc đảo Phan Rang, Tháp cổ Pô Na Ga, Sào huyệt Sa Trùng, Bí cảnh Cát Vàng |
+| Nam Hoang Quốc (nam) | Rừng rậm, núi lửa | Thành Cần Thơ (kinh đô), Thành Bảo Lộc | Làng U Minh, Rừng tràm U Minh Hạ, Hỏa sơn Chư Đăng Ya, Hang Sơn Đoòng, Cảng Hà Tiên |
+| Đông Sơn Quốc (đông) | Cao nguyên, núi đá | Cố đô Hoa Lư (kinh đô), Thành Hải Phòng, Thành Thanh Hóa | Làng Mộc Châu, Kiếm các Tam Đảo, Hồ Núi Cốc, Cổ tự Bái Đính, Bí cảnh Tràng An, Cảng Đồ Sơn, Bến Sầm Sơn |
+| Quần đảo Đông Hải | Bốn đảo | | Bến Cát Bà, Động Thiên Cung, Làng chài Lý Sơn, Miệng núi Thới Lới, Cảng An Thới, Rừng Hàm Ninh, Ngục Côn Lôn |
+| Xích Diệm Đảo | Núi lửa, sông dung nham | | Bến Hòn Khói, Làng Cù Lao, Lò rèn Bát Tràng, Núi Bà Đen, Hỏa ngục Chư Prông |
+| Đảo lẻ | | | Hải đăng Bạch Long Vĩ, Thủy trại Hòn Tre |
 
 Linh khí từng nơi ghi trong `src/data/map.ts`: trong thành ×0,8-1,5; các linh mạch lớn ở châu khác tới ×3.
 
@@ -187,7 +189,7 @@ Linh khí từng nơi ghi trong `src/data/map.ts`: trong thành ×0,8-1,5; các 
 
 - Khung hình dọc 720×1280, tự co theo màn hình.
 - Giai đoạn đầu dùng hình vẽ bằng code và hiệu ứng; thay dần bằng asset.
-- Hai nhân vật mặc định nam và nữ (`public/assets/characters/`) là hình vector 2D kiểu chibi do mình tự vẽ, dùng tạm. Mục tiêu về sau: hình kiểu hoạt hình tu tiên, 3D nếu được, do họa sĩ hoặc công cụ tạo hình làm.
+- Hai nhân vật mặc định nam và nữ (`public/assets/characters/`) hiện là hình vector 2D kiểu chibi, dùng tạm. Hình chính thức sẽ do công cụ tạo ảnh AI vẽ theo mô tả trong [NHAN-VAT.md](NHAN-VAT.md): kiểu hoạt hình tu tiên Trung Quốc, dựng 3D.
 - Âm thanh: chưa bàn.
 
 ## 13. Câu hỏi còn mở

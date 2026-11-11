@@ -5,6 +5,7 @@ import {
   DANGER_LEVELS,
   dangerLevel,
   findRoute,
+  landAt,
   MAP_HEIGHT,
   MAP_WIDTH,
   PLACES,
@@ -400,6 +401,8 @@ export class MapScene extends Phaser.Scene {
     const description = event
       ? label(this, cx, PANEL_TOP + 116, `Sự kiện: ${event.title}  ·  còn ${monthsLeft} tháng`, 21, '#ffd36b')
       : label(this, cx, PANEL_TOP + 116, place.description, 21, '#8a94a8');
+    const country = landAt(place.x, place.y);
+    if (country) title.setText(`${place.name}  ·  ${this.titleCase(country.name)}`).setFontSize(30);
     this.panel.push(...pin([bg, line, title, subtitle, description]));
 
     const color = PATHS[this.life.path].color;
@@ -472,6 +475,15 @@ export class MapScene extends Phaser.Scene {
       const text = cost > 0 ? `Đột phá: thành công ${chance}%  ·  cần ${cost} linh thạch` : `Đột phá: thành công ${chance}%`;
       this.panel.push(...pin([label(this, cx, PANEL_TOP + 302, text, 20, enough ? '#c9d4e8' : '#ff8a8a')]));
     }
+  }
+
+  /** "LẠC VIỆT QUỐC" thành "Lạc Việt Quốc". */
+  private titleCase(text: string): string {
+    return text
+      .toLocaleLowerCase('vi')
+      .split(' ')
+      .map((word) => word.charAt(0).toLocaleUpperCase('vi') + word.slice(1))
+      .join(' ');
   }
 
   // ---------- Hành động ----------
@@ -710,7 +722,11 @@ export class MapScene extends Phaser.Scene {
     const level = dangerLevel(birthplace, life.tier);
     const lines: [string, number, string][] = [
       [`Kiếp thứ ${life.index}`, 56, '#e8f0ff'],
-      [`Hồn nhập vào một đứa trẻ phàm nhân 12 tuổi ở ${birthplace.name}.`, 26, '#8a94a8'],
+      [
+        `Hồn nhập vào một đứa trẻ phàm nhân 12 tuổi ở ${birthplace.name}, ${this.titleCase(landAt(birthplace.x, birthplace.y)?.name ?? '')}.`,
+        26,
+        '#8a94a8',
+      ],
       [origin.name, 36, '#ffd36b'],
       [origin.description, 24, '#c9d4e8'],
       [`${life.linhCan.name}: ${life.linhCan.elements.join(', ')}`, 34, '#7fd4ff'],

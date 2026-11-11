@@ -119,6 +119,9 @@ function curve(ctx: Ctx, points: Point[], width: number, color: string, alpha = 
   ctx.globalAlpha = 1;
 }
 
+/** Các vùng đất được vẽ đè lên vùng đang vẽ: không rải hình trang trí vào phần bị chúng che. */
+let blockers: Land[] = [];
+
 function nearPlace(x: number, y: number, distance: number): boolean {
   return PLACES.some((place) => Math.hypot(place.x - x, place.y - y) < distance);
 }
@@ -141,6 +144,7 @@ function scatter(
     const x = cx + Math.cos(angle) * rx * radius;
     const y = cy + Math.sin(angle) * ry * radius;
     if (!isInLand(land, x, y, 0.93) || (clearance > 0 && nearPlace(x, y, clearance))) continue;
+    if (blockers.some((other) => isInLand(other, x, y, 1.02))) continue;
     points.push({ x, y });
   }
   // Vẽ từ trên xuống để hình phía dưới che chân hình phía trên.
@@ -315,15 +319,25 @@ function decorateDesert(ctx: Ctx, land: Land, random: Random): void {
   }
 }
 
+/** Dời một dãy điểm viết theo vị trí gốc của vùng đất sang vị trí hiện tại của nó. */
+function moved(points: [number, number][], land: Land, originX: number, originY: number): Point[] {
+  return points.map(([x, y]) => ({ x: x + land.cx - originX, y: y + land.cy - originY }));
+}
+
 function decorateJungle(ctx: Ctx, land: Land, random: Random): void {
-  const course = [
-    { x: 1700, y: 5560 },
-    { x: 2050, y: 5620 },
-    { x: 2420, y: 5480 },
-    { x: 2700, y: 5380 },
-    { x: 2800, y: 5200 },
-    { x: 2840, y: 5020 },
-  ];
+  const course = moved(
+    [
+      [1700, 5560],
+      [2050, 5620],
+      [2420, 5480],
+      [2700, 5380],
+      [2800, 5200],
+      [2840, 5020],
+    ],
+    land,
+    2800,
+    5600,
+  );
   curve(ctx, course, 30, '#16403a');
   curve(ctx, course, 18, '#3f7f6a');
   const volcano = placeById('chuDangYa');
@@ -357,14 +371,19 @@ function decorateIsland(ctx: Ctx, land: Land, random: Random): void {
 }
 
 function decorateHighland(ctx: Ctx, land: Land, random: Random): void {
-  const course = [
-    { x: 7650, y: 1900 },
-    { x: 7500, y: 2400 },
-    { x: 7300, y: 2750 },
-    { x: 6900, y: 2950 },
-    { x: 6500, y: 3050 },
-    { x: 6150, y: 3020 },
-  ];
+  const course = moved(
+    [
+      [7650, 1900],
+      [7500, 2400],
+      [7300, 2750],
+      [7500, 3300],
+      [7900, 3600],
+      [8350, 3700],
+    ],
+    land,
+    7300,
+    3000,
+  );
   curve(ctx, course, 26, '#1d4b61');
   curve(ctx, course, 15, '#2e86ab');
   const lake = placeById('nuiCoc');
@@ -400,20 +419,30 @@ function decorateHighland(ctx: Ctx, land: Land, random: Random): void {
 function decorateVolcanic(ctx: Ctx, land: Land, random: Random): void {
   // Sông dung nham.
   const flows = [
-    [
-      { x: 7500, y: 6500 },
-      { x: 7250, y: 6620 },
-      { x: 6950, y: 6600 },
-      { x: 6600, y: 6650 },
-      { x: 6250, y: 6820 },
-      { x: 5950, y: 6900 },
-    ],
-    [
-      { x: 7500, y: 6500 },
-      { x: 7600, y: 6250 },
-      { x: 7450, y: 6000 },
-      { x: 7200, y: 5850 },
-    ],
+    moved(
+      [
+        [7500, 6500],
+        [7250, 6620],
+        [6950, 6600],
+        [6600, 6650],
+        [6250, 6820],
+        [5950, 6900],
+      ],
+      land,
+      6700,
+      6350,
+    ),
+    moved(
+      [
+        [7500, 6500],
+        [7600, 6250],
+        [7450, 6000],
+        [7200, 5850],
+      ],
+      land,
+      6700,
+      6350,
+    ),
   ];
   for (const flow of flows) {
     curve(ctx, flow, 34, '#5a1f12');
@@ -443,27 +472,13 @@ function decorateVolcanic(ctx: Ctx, land: Land, random: Random): void {
   }
 }
 
-function drawLand(scene: Phaser.Scene, land: Land, random: Random, lights: Point[]): void {
-  const left = land.cx - land.rx * PAD;
-  const top = land.cy - land.ry * PAD;
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.ceil(land.rx * PAD * 2 * TEXTURE_SCALE);
-  canvas.height = Math.ceil(land.ry * PAD * 2 * TEXTURE_SCALE);
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-  // Sau phép biến đổi này, mọi nét vẽ dùng thẳng tọa độ trên bản đồ thế giới.
-  ctx.setTransform(TEXTURE_SCALE, 0, 0, TEXTURE_SCALE, -left * TEXTURE_SCALE, -top * TEXTURE_SCALE);
-
+function decorate(ctx: Ctx, land: Land, random: Random, lights: Point[]): void {
   const colors = PALETTE[land.biome];
-  coast(ctx, land, 1.07, colors.shallow, 0.55);
-  coast(ctx, land, 1.035, colors.shallow);
-  coast(ctx, land, 1.012, colors.sand);
   coast(ctx, land, 1, colors.land);
   const patches = Math.round((land.rx * land.ry) / 9000);
   for (const spot of everywhere(random, land, patches, 0)) {
     ellipse(ctx, spot.x, spot.y, 90 + random() * 140, 50 + random() * 80, random() < 0.5 ? colors.patchA : colors.patchB, 0.45);
   }
-
   if (land.biome === 'temperate') decorateHome(ctx, land, random, lights);
   else if (land.biome === 'ice') decorateIce(ctx, land, random);
   else if (land.biome === 'desert') decorateDesert(ctx, land, random);
@@ -471,8 +486,35 @@ function drawLand(scene: Phaser.Scene, land: Land, random: Random, lights: Point
   else if (land.biome === 'highland') decorateHighland(ctx, land, random);
   else if (land.biome === 'volcanic') decorateVolcanic(ctx, land, random);
   else decorateIsland(ctx, land, random);
+}
 
-  const key = `land-${land.id}`;
+/**
+ * Vẽ một nhóm vùng đất lên chung một tấm ảnh. Đại lục gồm nhiều quốc gia liền nhau được vẽ chung
+ * để bờ cát và nước nông chỉ chạy quanh mép ngoài, không cắt ngang giữa hai nước.
+ */
+function drawLandGroup(scene: Phaser.Scene, key: string, lands: Land[], random: Random, lights: Point[]): void {
+  const left = Math.min(...lands.map((land) => land.cx - land.rx * PAD));
+  const top = Math.min(...lands.map((land) => land.cy - land.ry * PAD));
+  const right = Math.max(...lands.map((land) => land.cx + land.rx * PAD));
+  const bottom = Math.max(...lands.map((land) => land.cy + land.ry * PAD));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.ceil((right - left) * TEXTURE_SCALE);
+  canvas.height = Math.ceil((bottom - top) * TEXTURE_SCALE);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  // Sau phép biến đổi này, mọi nét vẽ dùng thẳng tọa độ trên bản đồ thế giới.
+  ctx.setTransform(TEXTURE_SCALE, 0, 0, TEXTURE_SCALE, -left * TEXTURE_SCALE, -top * TEXTURE_SCALE);
+
+  for (const land of lands) coast(ctx, land, 1.07, PALETTE[land.biome].shallow, 0.55);
+  for (const land of lands) coast(ctx, land, 1.035, PALETTE[land.biome].shallow);
+  for (const land of lands) coast(ctx, land, 1.012, PALETTE[land.biome].sand);
+  // Vẽ từ vùng ưu tiên thấp tới cao: chỗ hai nước chồng lên nhau thuộc về nước đứng trước trong danh sách.
+  for (let i = lands.length - 1; i >= 0; i -= 1) {
+    blockers = lands.slice(0, i);
+    decorate(ctx, lands[i], random, lights);
+  }
+  blockers = [];
+
   if (scene.textures.exists(key)) scene.textures.remove(key);
   scene.textures.addCanvas(key, canvas);
   scene.add.image(left, top, key).setOrigin(0, 0).setScale(1 / TEXTURE_SCALE).setDepth(0);
@@ -576,12 +618,11 @@ function drawNames(scene: Phaser.Scene): void {
     [HOME_X + 1340, HOME_Y + 300, 'RỪNG CÚC PHƯƠNG', 6],
     [HOME_X + 1300, HOME_Y + 1830, 'NÚI ĐÁ PHONG NHA', -4],
     [HOME_X + 560, HOME_Y + 1560, 'ĐẤT HOANG HẮC THỦY', 5],
-    [1700, 2200, 'BIỂN BẮC', 0],
-    [1650, 4700, 'BIỂN TÂY', 0],
-    [4000, 3300, 'BIỂN ĐÔNG HẢI', 90],
-    [4300, 5100, 'BIỂN NAM', 0],
-    [5750, 3400, 'VỊNH ĐÔNG SƠN', 90],
-    [5200, 6500, 'BIỂN LỬA', 0],
+    [3700, 230, 'BIỂN BẮC', 0],
+    [650, 4250, 'BIỂN TÂY', 0],
+    [4830, 2700, 'BIỂN ĐÔNG HẢI', 90],
+    [2500, 4650, 'BIỂN NAM', 0],
+    [4300, 5400, 'BIỂN LỬA', 0],
   ];
   for (const [x, y, text, angle] of names) {
     label(scene, x, y, text, 26, '#f1e6c8').setAlpha(0.45).setAngle(angle).setDepth(3);
@@ -592,7 +633,8 @@ function drawNames(scene: Phaser.Scene): void {
 export function drawTerrain(scene: Phaser.Scene): Phaser.GameObjects.Text[] {
   const random = seededRandom(20261111);
   const lights: Point[] = [];
-  LANDS.forEach((land) => drawLand(scene, land, random, lights));
+  drawLandGroup(scene, 'land-mainland', LANDS.filter((land) => land.mainland), random, lights);
+  LANDS.filter((land) => !land.mainland).forEach((land) => drawLandGroup(scene, `land-${land.id}`, [land], random, lights));
   drawRoads(scene);
   for (const spot of lights) {
     const light = scene.add.circle(spot.x, spot.y, 3, 0xff6b6b, 1).setDepth(2);
@@ -600,18 +642,19 @@ export function drawTerrain(scene: Phaser.Scene): Phaser.GameObjects.Text[] {
   }
   drawWaves(scene, random);
   drawClouds(scene, random);
-  drawCompass(scene, 4700, 900);
+  drawCompass(scene, 6600, 900);
   drawNames(scene);
 
   const titles = LANDS.map((land) => {
-    const size = land.biome === 'island' ? 110 : 190;
+    const size = land.biome === 'island' ? 110 : 170;
     return label(scene, land.cx, land.cy, land.name, size, '#fff7df')
       .setStroke('#0b0f1a', 26)
       .setDepth(30)
       .setVisible(false);
   });
   titles.push(
-    label(scene, 4800, 1750, 'QUẦN ĐẢO ĐÔNG HẢI', 150, '#bfe8f7').setStroke('#0b0f1a', 22).setDepth(30).setVisible(false),
+    label(scene, 6350, 2000, 'QUẦN ĐẢO ĐÔNG HẢI', 130, '#bfe8f7').setStroke('#0b0f1a', 22).setDepth(30).setVisible(false),
+    label(scene, 2400, 250, 'THIÊN NAM ĐẠI LỤC', 260, '#ffd36b').setStroke('#0b0f1a', 30).setDepth(30).setVisible(false),
   );
   return titles;
 }
