@@ -1,88 +1,156 @@
 # Game Design Doc
 
-Bản nháp đầu tiên. Mục ghi **(đã chốt)** là điều chủ dự án đã quyết định; mục ghi **(đề xuất)** là gợi ý chờ duyệt, có thể đổi tự do.
+Mục ghi **(đã chốt)** là điều chủ dự án đã quyết định; mục ghi **(đề xuất)** là gợi ý chờ duyệt.
 
-## 1. Tổng quan
+## 1. Tổng quan (đã chốt)
 
 | Hạng mục | Nội dung |
 | --- | --- |
 | Tên game | Chưa đặt |
-| Thể loại | Tu luyện kết hợp khám phá, chiến đấu và giải đố **(đã chốt)** |
-| Bối cảnh | Tu tiên pha hiện đại, có dị năng và thể tu **(đã chốt)** |
-| Nền tảng | Trình duyệt điện thoại và máy tính **(đã chốt)** |
-| Người chơi | 1-2 người, chơi nội bộ **(đã chốt)** |
-| Hình ảnh | 2D, ưu tiên sự sống động qua chuyển động và hiệu ứng **(đã chốt)** |
-| Công nghệ | Phaser + TypeScript + Vite, phát hành qua GitHub Pages **(đã chốt)** |
-| Mục tiêu | Làm cho vui, không thương mại **(đã chốt)** |
+| Thể loại | Tu luyện kết hợp khám phá, chiến đấu và giải đố |
+| Bối cảnh | Tu tiên pha hiện đại, có dị năng và thể tu |
+| Nền tảng | Trình duyệt điện thoại và máy tính |
+| Người chơi | 1-2 người, chơi nội bộ |
+| Hình ảnh | 2D, ưu tiên sự sống động qua chuyển động và hiệu ứng |
+| Công nghệ | Phaser + TypeScript + Vite, phát hành qua GitHub Pages |
+| Mục tiêu | Làm cho vui, không thương mại |
+
+Quy ước dùng từ: dùng "pháp" (pháp thuật, sát thương pháp thuật), không dùng "phép".
 
 ## 2. Bối cảnh (đề xuất)
 
-Thế giới hiện đại nơi linh khí bất ngờ quay trở lại. Giữa thành phố, con người bắt đầu thức tỉnh theo ba con đường:
-
-- **Tu tiên:** hấp thụ linh khí, luyện công pháp, đột phá cảnh giới. Mạnh về phép thuật và tài nguyên dài hạn.
-- **Dị năng:** thức tỉnh một năng lực riêng (lửa, sét, không gian…). Mạnh về kỹ năng đặc biệt, bộc phát.
-- **Thể tu:** rèn luyện thân thể đến cực hạn. Mạnh về máu, phòng thủ và đòn đánh thường.
-
-Câu hỏi còn mở: người chơi chọn một con đường ngay từ đầu, hay được pha trộn cả ba?
+Thế giới hiện đại nơi linh khí bất ngờ quay trở lại. Giữa thành phố, con người bắt đầu thức tỉnh theo ba con đường: tu tiên, dị năng và thể tu. Phía trên Nhân giới còn có Linh giới và Tiên giới.
 
 ## 3. Vòng lặp chính (đề xuất)
 
-1. **Tu luyện** để tích lũy linh khí và tăng chỉ số.
-2. **Khám phá** các địa điểm trên bản đồ thành phố để gặp sự kiện, tìm tài nguyên.
-3. **Chiến đấu** với yêu thú hoặc người thức tỉnh khác để lấy vật phẩm.
+1. **Tu luyện** để tích lũy năng lượng và tăng chỉ số.
+2. **Khám phá** các địa điểm trên bản đồ để gặp sự kiện, tìm tài nguyên.
+3. **Chiến đấu** theo lượt với dị thú hoặc người thức tỉnh khác.
 4. **Giải đố** để mở bí cảnh hoặc vượt kiếp nạn khi đột phá.
-5. **Đột phá** cảnh giới, mở khu vực và kỹ năng mới, rồi quay lại bước 1.
+5. **Đột phá** cảnh giới, mở khu vực và kỹ năng mới.
+6. Hết tuổi thọ hoặc chết trong bí cảnh thì **luân hồi** và bắt đầu kiếp mới.
 
-## 4. Các hệ thống
+## 4. Ba nhánh tu luyện (đã chốt)
 
-### 4.1 Tu luyện (xương sống)
+- Người chơi chọn một nhánh chính khi tạo nhân vật.
+- Hai nhánh còn lại vẫn tu được như nhánh phụ, tốc độ bằng một nửa, không giới hạn bậc.
+- Mỗi nhánh có năng lượng riêng và tăng chỉ số khác nhau.
 
-- Linh khí tăng khi chạm tay và tăng dần theo thời gian, kể cả lúc không mở game.
-- Đủ linh khí thì đột phá cảnh giới: Luyện Khí → Trúc Cơ → Kim Đan → … **(đề xuất)**
-- Mỗi cảnh giới mở thêm kỹ năng, khu vực và tăng tốc độ tu luyện.
+| Nhánh | Năng lượng | Tăng mạnh | Tăng nhẹ | Đặc tính khi là nhánh chính |
+| --- | --- | --- | --- | --- |
+| Tu tiên | Linh khí | Linh lực | Thần thức, Ngộ tính | Tu luyện cả khi tắt game; pháp thuật đánh được nhiều mục tiêu |
+| Thể tu | Khí huyết | Thể chất, Sức mạnh | Mọi chỉ số còn lại | Hồi máu mỗi lượt; khó bị khống chế; đòn thường không tốn năng lượng |
+| Dị năng | Tinh thần lực | Thần thức | Thân pháp | Có một dị năng bản mệnh từ đầu (phẩm chất A trở lên), mạnh lên theo cảnh giới |
 
-### 4.2 Chiến đấu
+**Thể tu** là con đường của sự chăm chỉ: không phụ thuộc may rủi, mỗi giai đoạn cần 1,5 lần năng lượng so với hai nhánh kia nhưng tăng toàn diện. Khí huyết tăng cả khi chiến đấu.
 
-- Theo lượt, một đấu một ở bản đầu **(đề xuất)**.
-- Hành động cơ bản: đánh thường, dùng kỹ năng (tốn linh lực), phòng thủ, dùng vật phẩm.
+## 5. Chỉ số nhân vật (đã chốt)
 
-### 4.3 Khám phá
+| Chỉ số | Ảnh hưởng |
+| --- | --- |
+| Thể chất | Máu, phòng thủ |
+| Sức mạnh | Sát thương đòn vật lý |
+| Thân pháp | Thứ tự ra đòn, né tránh |
+| Linh lực | Sát thương pháp thuật, lượng linh lực tối đa |
+| Thần thức | Sức mạnh dị năng, chí mạng, kháng hiệu ứng |
+| Ngộ tính | Tốc độ tu luyện, tỉ lệ đột phá thành công |
 
-- Bản đồ gồm các điểm nối nhau, không phải thế giới mở **(đề xuất)**.
-- Mỗi điểm là một sự kiện: trận đấu, câu đố, nhân vật, kho báu.
+Chỉ số ẩn **Khí vận**: tỉ lệ rơi đồ, phẩm chất dị hạch **(đề xuất)**.
 
-### 4.4 Giải đố
+## 6. Cảnh giới
 
-- Đóng vai trò cửa ải: mở bí cảnh, phá trận pháp, vượt tâm ma khi đột phá **(đề xuất)**.
-- Loại câu đố cụ thể chưa quyết định.
+Mỗi bậc chia ba giai đoạn: sơ kỳ, trung kỳ, hậu kỳ. Cùng số bậc thì sức mạnh tương đương giữa các nhánh. Lên giới mới là một lần phi thăng.
 
-## 5. Chơi hai người
+| Giới | Bậc | Tu tiên | Thể tu | Dị năng |
+| --- | --- | --- | --- | --- |
+| Nhân giới | 1 | Luyện Khí | Luyện Bì | Thức Tỉnh |
+| | 2 | Trúc Cơ | Luyện Nhục | Ngưng Hạch |
+| | 3 | Kim Đan | Đoán Cốt | Hóa Hình |
+| | 4 | Nguyên Anh | Dịch Cân | Lĩnh Vực |
+| | 5 | Hóa Thần | Tẩy Tủy | Pháp Tắc |
+| Linh giới | 6 | Luyện Hư | Hoán Huyết | Chưởng Khống |
+| | 7 | Hợp Thể | Kim Thân | Quy Nhất |
+| | 8 | Đại Thừa | Bất Hoại | Siêu Phàm |
+| | 9 | Độ Kiếp | Thánh Thể | Nhập Thánh |
+| Tiên giới | 10 | Chân Tiên | Tiên Thể | Bán Thần |
+| | 11 | Kim Tiên | Pháp Tướng | Chân Thần |
+| | 12 | Thái Ất | Bất Diệt Thể | Thần Vương |
+| | 13 | Đại La | Hỗn Độn Thể | Thần Hoàng |
+| | 14 | Đạo Tổ | *chờ chọn* | *chờ chọn* |
 
-- **Giai đoạn đầu:** mỗi người chơi bản riêng, tiến trình lưu trên trình duyệt của mình **(đã chốt)**.
-- **Giai đoạn sau:** hai người chung một máy chủ nếu làm được **(đã chốt là mong muốn)**. Cần thêm dịch vụ lưu trữ trực tuyến; sẽ chọn khi tới milestone đó.
-- Dữ liệu lưu được giữ ở dạng đơn giản ngay từ đầu để chuyển lên máy chủ sau này không phải làm lại.
+Tên bậc 14 của thể tu và dị năng đang chờ chọn lại. Gợi ý:
 
-## 6. Hình ảnh và âm thanh
+- Thể tu: Bàn Cổ Chân Thân, Khai Thiên, Vạn Cổ Bất Diệt.
+- Dị năng: Sáng Thế, Khởi Nguyên, Vĩnh Hằng.
 
-- Khung hình dọc 720×1280, tự co theo màn hình **(đề xuất)**.
-- Giai đoạn đầu dùng hình vẽ bằng code và hiệu ứng (ánh sáng, hạt, rung, chuyển động).
-- Thay dần bằng asset miễn phí, ảnh do AI tạo hoặc tranh nhờ người vẽ.
+## 7. Linh căn (đã chốt)
+
+Mỗi nhân vật có linh căn, quay ngẫu nhiên khi tạo nhân vật và mỗi lần luân hồi. Ít hệ thì tu tiên nhanh; nhiều hệ thì chậm nhưng dùng được nhiều hệ pháp thuật.
+
+| Linh căn | Tốc độ tu tiên | Số hệ | Tỉ lệ quay |
+| --- | --- | --- | --- |
+| Ngũ linh căn | ×0,6 | 5 | 30% |
+| Tứ linh căn | ×0,8 | 4 | 28% |
+| Tam linh căn | ×1,0 | 3 | 22% |
+| Song linh căn | ×1,3 | 2 | 13% |
+| Thiên linh căn | ×1,7 | 1 | 5% |
+| Dị linh căn (Lôi, Băng, Phong) | ×1,7 | 1 hệ đặc biệt | 2% |
+
+Tỉ lệ quay là con số tạm, sẽ chỉnh khi chơi thử.
+
+## 8. Dị năng
+
+- Mỗi người tối đa 5 dị năng **(đã chốt)**.
+- Thức tỉnh dị năng mới cần năng lượng và một vật dẫn **(đã chốt)**. Vật dẫn là **dị hạch**, rơi từ dị thú hoặc tìm trong bí cảnh; hạch hệ nào ra dị năng hệ đó **(đề xuất)**.
+- Ô dị năng mở dần theo cảnh giới; dị năng sau tốn nhiều năng lượng hơn; đủ 5 ô thì phải bỏ một cái cũ để lấy cái mới **(đề xuất)**.
+- Mỗi dị năng có **phẩm chất** riêng, tách khỏi cảnh giới: cùng bậc, dị năng SSS mạnh hơn hẳn SS **(đã chốt ý tưởng, con số là đề xuất)**.
+
+| Phẩm chất | Sức mạnh | Độ hiếm |
+| --- | --- | --- |
+| C | ×1,0 | Thường gặp |
+| B | ×1,2 | Thường gặp |
+| A | ×1,5 | Hiếm |
+| S | ×2,0 | Rất hiếm |
+| SS | ×2,6 | Cực hiếm |
+| SSS | ×3,5 | Gần như độc nhất |
+
+- Phẩm chất do dị hạch quyết định; nâng được bằng cách hấp thụ thêm hạch cùng hệ **(đề xuất)**.
+
+## 9. Luân hồi
+
+**Đã chốt:** nhân vật có tuổi thọ giới hạn. Hết tuổi thọ hoặc chết trong bí cảnh thì luân hồi, quay lại linh căn.
+
+**Đề xuất:**
+
+- Mỗi bậc cảnh giới kéo dài tuổi thọ (ví dụ Luyện Khí 100 năm, Trúc Cơ 200, Kim Đan 500, Nguyên Anh 1.000, Hóa Thần 2.000). Tuổi tăng theo thời gian tu luyện và mỗi chuyến khám phá.
+- Khi luân hồi: chọn lại nhánh chính, quay lại linh căn, cảnh giới về đầu.
+- Kiếp trước để lại **đạo quả**: phần thưởng vĩnh viễn tính theo cảnh giới cao nhất đã đạt, ví dụ cộng Ngộ tính, Khí vận, hoặc tăng tỉ lệ ra linh căn tốt. Nhờ vậy mỗi kiếp mạnh hơn kiếp trước.
+- Thua trận thường chỉ bị thương (mất năng lượng, nghỉ một lúc); chỉ bí cảnh và kiếp nạn mới có thể chết.
+
+Câu hỏi còn mở: kiếp sau giữ lại được gì (vật phẩm, dị năng, ký ức công pháp)?
+
+## 10. Các hệ thống khác (đề xuất)
+
+- **Chiến đấu:** theo lượt, một đấu một ở bản đầu. Đánh thường, kỹ năng, phòng thủ, vật phẩm.
+- **Khám phá:** bản đồ gồm các điểm nối nhau; mỗi điểm là một sự kiện.
+- **Giải đố:** cửa ải mở bí cảnh, phá trận pháp, vượt tâm ma. Loại câu đố chưa quyết định.
+
+## 11. Chơi hai người (đã chốt)
+
+- Giai đoạn đầu: mỗi người chơi bản riêng, tiến trình lưu trên trình duyệt.
+- Giai đoạn sau: hai người chung một máy chủ nếu làm được.
+
+## 12. Hình ảnh và âm thanh
+
+- Khung hình dọc 720×1280, tự co theo màn hình.
+- Giai đoạn đầu dùng hình vẽ bằng code và hiệu ứng; thay dần bằng asset.
 - Âm thanh: chưa bàn.
 
-## 7. Phạm vi bản đầu tiên (MVP)
-
-Chỉ một vòng lặp nhỏ nhất chơi được từ đầu đến cuối:
-
-- Tu luyện tích linh khí.
-- Một trận chiến đấu theo lượt.
-- Đột phá một cảnh giới.
-
-Khám phá bản đồ, giải đố, ba con đường tu luyện và chơi chung hai người làm ở các milestone sau. Xem [ROADMAP.md](ROADMAP.md).
-
-## 8. Câu hỏi còn mở
+## 13. Câu hỏi còn mở
 
 1. Tên game?
-2. Chọn một con đường hay pha trộn cả ba?
-3. Có cốt truyện và nhân vật chính cụ thể không, hay tự do?
-4. Loại câu đố ưa thích (xếp hình, mật mã, trận pháp nối điểm…)?
-5. Khi chơi chung: hợp tác đánh quái, giao dịch vật phẩm, hay tỉ thí với nhau?
+2. Tên bậc 14 của thể tu và dị năng?
+3. Luân hồi giữ lại gì cho kiếp sau?
+4. Có cốt truyện và nhân vật chính cụ thể không?
+5. Loại câu đố ưa thích?
+6. Khi chơi chung: hợp tác, giao dịch hay tỉ thí?

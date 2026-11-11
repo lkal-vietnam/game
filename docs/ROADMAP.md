@@ -7,15 +7,17 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 - [x] Chọn công nghệ: Phaser + TypeScript + Vite
 - [x] Dựng skeleton, màn hình mẫu chạm để tích linh khí
 - [x] Game Design Doc bản nháp, roadmap, quy ước làm việc
-- [ ] Đẩy code lên GitHub
-- [ ] Bật GitHub Pages để có link chơi trên điện thoại và máy tính
+- [x] Đẩy code lên GitHub
+- [x] Bật GitHub Pages để có link chơi trên điện thoại và máy tính
 
 ## M1 — Tu luyện và đột phá
 
-- [ ] Linh khí tăng theo thời gian, kể cả lúc tắt game
-- [ ] Bảng chỉ số nhân vật
-- [ ] Đột phá cảnh giới đầu tiên, có hiệu ứng
-- [ ] Lưu và tải tiến trình
+- [x] Tạo nhân vật: chọn nhánh chính, quay linh căn, dị năng bản mệnh
+- [x] Bảng sáu chỉ số
+- [x] Tu luyện nhánh chính qua 5 bậc Nhân giới, mỗi bậc 3 giai đoạn
+- [x] Đột phá có hiệu ứng, cộng chỉ số theo nhánh
+- [x] Lưu tiến trình; tu tiên tích linh khí cả khi tắt game
+- [ ] Chơi thử và chỉnh con số (tốc độ, năng lượng cần)
 
 ## M2 — Chiến đấu theo lượt
 
@@ -38,10 +40,12 @@ Hết M2 là có bản MVP: tu luyện → chiến đấu → đột phá.
 - [ ] Bí cảnh đầu tiên mở bằng câu đố
 - [ ] Kiếp nạn khi đột phá
 
-## M5 — Ba con đường và nội dung
+## M5 — Nhánh phụ, dị năng, luân hồi
 
-- [ ] Tu tiên, dị năng, thể tu với kỹ năng riêng
-- [ ] Thêm cảnh giới, khu vực, kẻ địch
+- [ ] Tu nhánh phụ (tốc độ một nửa)
+- [ ] Dị hạch, thức tỉnh và nâng phẩm chất dị năng (tối đa 5)
+- [ ] Tuổi thọ và luân hồi
+- [ ] Linh giới, Tiên giới, thêm khu vực và kẻ địch
 - [ ] Cân bằng chỉ số
 
 ## M6 — Hình ảnh và âm thanh

@@ -12,7 +12,7 @@
 - `feat/<tên-ngắn>`: tính năng mới, ví dụ `feat/chien-dau`.
 - `fix/<tên-ngắn>`: sửa lỗi.
 
-Xong việc thì gộp vào `main` qua pull request; CI phải build thành công.
+Việc nhỏ đã được duyệt có thể đẩy thẳng lên `main`. Việc lớn hoặc còn thử nghiệm thì làm trên nhánh riêng rồi gộp qua pull request; CI phải build thành công.
 
 ## Commit
 
@@ -34,8 +34,11 @@ public/assets/   Hình ảnh, âm thanh
 src/
   main.ts        Điểm khởi động game
   config.ts      Hằng số chung
+  data/          Bảng dữ liệu: nhánh, cảnh giới, linh căn
   scenes/        Mỗi màn hình là một file
   state/         Dữ liệu người chơi, lưu và tải
+  systems/       Luật chơi (tu luyện, đột phá), không dính tới hình ảnh
+  ui/            Nút bấm, chữ dùng chung
 ```
 
 ## Asset
