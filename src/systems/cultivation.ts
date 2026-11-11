@@ -1,13 +1,25 @@
 import { BASE_STATS, PATHS, STAGE_NAMES, type PathId, type Stats } from '../data/paths';
-import { rollBanMenhDiNang, rollLinhCan } from '../data/talents';
+import { rollBanMenhDiNang, rollLinhCan, type LinhCan } from '../data/talents';
 import type { Character } from '../state/save';
+
+/** Phần chung giữa bản thể và một kiếp lịch luyện: ai tu luyện cũng có các trường này. */
+export interface Cultivator {
+  path: PathId;
+  linhCan: LinhCan;
+  tier: number;
+  stage: number;
+  energy: number;
+  stats: Stats;
+}
 
 /** Bản hiện tại chỉ có Nhân giới: bậc 1 đến 5. */
 export const MAX_TIER = 5;
 const BASE_COST = 60;
 const COST_GROWTH = 1.55;
 const BASE_RATE = 1;
-/** Tu luyện khi vắng mặt tính tối đa 8 giờ. */
+/** Đặc tính tu tiên: bế quan hiệu quả hơn. */
+export const TU_TIEN_BONUS = 1.25;
+/** Bế quan khi tắt game tính tối đa 8 giờ thật. */
 const OFFLINE_CAP_SECONDS = 8 * 3600;
 
 export function createCharacter(
@@ -27,41 +39,46 @@ export function createCharacter(
   };
 }
 
-export function realmName(c: Character): string {
+export function realmName(c: Cultivator): string {
   return `${PATHS[c.path].tiers[c.tier - 1]} · ${STAGE_NAMES[c.stage]}`;
 }
 
-export function isAtPeak(c: Character): boolean {
+export function isAtPeak(c: Cultivator): boolean {
   return c.tier === MAX_TIER && c.stage === STAGE_NAMES.length - 1;
 }
 
 /** Lần lên tiếp theo là đột phá bậc lớn (hậu kỳ lên bậc mới). */
-export function isBreakthrough(c: Character): boolean {
+export function isBreakthrough(c: Cultivator): boolean {
   return c.stage === STAGE_NAMES.length - 1;
 }
 
-export function energyRequired(c: Character): number {
+export function energyRequired(c: Cultivator): number {
   const index = (c.tier - 1) * STAGE_NAMES.length + c.stage;
   return Math.round(BASE_COST * Math.pow(COST_GROWTH, index) * PATHS[c.path].costMultiplier);
 }
 
-/** Năng lượng hấp thụ mỗi giây. */
-export function energyRate(c: Character): number {
+/** Hệ số tốc độ chung: ngộ tính, linh căn và đặc tính tu tiên. */
+export function talentMultiplier(c: Cultivator): number {
   const fromNgoTinh = 1 + c.stats.ngoTinh * 0.02;
-  const fromLinhCan = c.path === 'tuTien' ? c.linhCan.speed : 1;
-  return BASE_RATE * c.tier * fromNgoTinh * fromLinhCan;
+  const fromPath = c.path === 'tuTien' ? c.linhCan.speed * TU_TIEN_BONUS : 1;
+  return fromNgoTinh * fromPath;
 }
 
-export function tapGain(c: Character): number {
+/** Năng lượng bản thể hấp thụ mỗi giây thật. */
+export function energyRate(c: Cultivator): number {
+  return BASE_RATE * c.tier * talentMultiplier(c);
+}
+
+export function tapGain(c: Cultivator): number {
   return energyRate(c);
 }
 
-export function canAdvance(c: Character): boolean {
+export function canAdvance(c: Cultivator): boolean {
   return !isAtPeak(c) && c.energy >= energyRequired(c);
 }
 
 /** Lên một giai đoạn. Trả về các chỉ số được cộng, hoặc null nếu chưa đủ điều kiện. */
-export function advance(c: Character): Partial<Stats> | null {
+export function advance(c: Cultivator): Partial<Stats> | null {
   if (!canAdvance(c)) return null;
   const major = isBreakthrough(c);
   c.energy -= energyRequired(c);
@@ -82,13 +99,13 @@ export function advance(c: Character): Partial<Stats> | null {
 }
 
 /**
+ * Bản thể bế quan theo thời gian thật, kể cả khi tắt game.
  * Tính năng lượng tích được trong lúc vắng mặt và cập nhật mốc thời gian.
- * Chỉ nhánh tu tiên có đặc tính này.
  */
 export function applyOfflineGain(c: Character, now: number): number {
   const seconds = Math.min(Math.max((now - c.lastSeen) / 1000, 0), OFFLINE_CAP_SECONDS);
   c.lastSeen = now;
-  if (c.path !== 'tuTien' || seconds < 60) return 0;
+  if (seconds < 60) return 0;
   const gain = Math.floor(energyRate(c) * seconds);
   c.energy += gain;
   return gain;

@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from '../config';
 import { PATHS, STAT_HINTS, STAT_LABELS, type Stats } from '../data/paths';
-import { loadSave, writeSave, type Character } from '../state/save';
+import { emptySave, loadSave, writeSave, type Character, type SaveData } from '../state/save';
 import {
   advance,
   applyOfflineGain,
@@ -19,6 +19,7 @@ const BAR_WIDTH = 560;
 
 /** Màn hình tu luyện: tích năng lượng, lên giai đoạn, đột phá, xem chỉ số. */
 export class CultivateScene extends Phaser.Scene {
+  private save!: SaveData;
   private c!: Character;
   private realmText!: Phaser.GameObjects.Text;
   private energyText!: Phaser.GameObjects.Text;
@@ -34,12 +35,12 @@ export class CultivateScene extends Phaser.Scene {
   }
 
   create(): void {
-    const save = loadSave();
-    if (!save.character) {
+    this.save = loadSave();
+    if (!this.save.character) {
       this.scene.start('Create');
       return;
     }
-    this.c = save.character;
+    this.c = this.save.character;
     this.statsPanel = [];
     this.resetArmed = false;
     const offlineGain = applyOfflineGain(this.c, Date.now());
@@ -59,7 +60,7 @@ export class CultivateScene extends Phaser.Scene {
     this.energyText = label(this, cx, 370, '', 28, '#c9d4e8');
     this.rateText = label(this, cx, 410, '', 22, '#8a94a8');
 
-    const orbY = 660;
+    const orbY = 640;
     const halo = this.add.circle(cx, orbY, 190, def.color, 0.16);
     const orb = this.add.circle(cx, orbY, 130, def.color, 0.92);
     orb.setInteractive({ useHandCursor: true });
@@ -79,11 +80,23 @@ export class CultivateScene extends Phaser.Scene {
       this.floatText(pointer.x, pointer.y, `+${gain.toFixed(1)}`);
       this.refresh();
     });
-    label(this, cx, 900, `Chạm để hấp thụ ${def.energyName.toLowerCase()}`, 24, '#8a94a8');
+    label(this, cx, 870, `Chạm để hấp thụ ${def.energyName.toLowerCase()}`, 24, '#8a94a8');
 
-    this.advanceButton = button(this, cx, 1010, 460, 90, '', def.color, () => this.tryAdvance());
-    button(this, cx - 150, 1130, 260, 70, 'Chỉ số', 0xc9d4e8, () => this.toggleStats());
-    const resetButton = button(this, cx + 150, 1130, 260, 70, 'Tạo lại', 0x8a94a8, () => {
+    this.advanceButton = button(this, cx, 975, 460, 84, '', def.color, () => this.tryAdvance());
+    button(this, cx, 1105, 460, 70, this.save.life ? 'Tiếp tục lịch luyện' : 'Lịch luyện kiếp mới', 0xffd36b, () => {
+      this.persist();
+      this.scene.start('Map');
+    }, 26);
+    label(
+      this,
+      cx,
+      1160,
+      `Đã trải ${this.save.livesLived} kiếp  ·  Điểm luân hồi: ${this.save.luanHoiPoints}`,
+      22,
+      '#8a94a8',
+    );
+    button(this, cx - 150, 1220, 260, 60, 'Chỉ số', 0xc9d4e8, () => this.toggleStats(), 24);
+    const resetButton = button(this, cx + 150, 1220, 260, 60, 'Tạo lại', 0x8a94a8, () => {
       if (!this.resetArmed) {
         this.resetArmed = true;
         resetButton.setLabel('Chắc chắn xóa?');
@@ -93,16 +106,16 @@ export class CultivateScene extends Phaser.Scene {
         });
         return;
       }
-      writeSave({ version: 2, character: null });
+      writeSave(emptySave());
       this.scene.start('Create');
-    });
+    }, 24);
 
     if (offlineGain > 0) {
       const note = label(
         this,
         cx,
         470,
-        `Lúc bạn vắng mặt: +${formatNumber(offlineGain)} ${def.energyName.toLowerCase()}`,
+        `Bế quan lúc vắng mặt: +${formatNumber(offlineGain)} ${def.energyName.toLowerCase()}`,
         24,
         '#ffd36b',
       );
@@ -130,7 +143,7 @@ export class CultivateScene extends Phaser.Scene {
   private persist(): void {
     this.sinceSave = 0;
     this.c.lastSeen = Date.now();
-    writeSave({ version: 2, character: this.c });
+    writeSave(this.save);
   }
 
   private refresh(): void {

@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH } from '../config';
 import { PATHS, PATH_ORDER, type PathId } from '../data/paths';
-import { writeSave, type Character } from '../state/save';
+import { emptySave, writeSave, type Character } from '../state/save';
 import { createCharacter } from '../systems/cultivation';
 import { button, label } from '../ui/widgets';
 
@@ -35,7 +35,7 @@ export class CreateScene extends Phaser.Scene {
   private choose(id: PathId): void {
     // Lưu ngay để không thể tải lại trang mà quay linh căn lần nữa.
     const character = createCharacter(id, Date.now());
-    writeSave({ version: 2, character });
+    writeSave({ ...emptySave(), character });
     this.children.removeAll(true);
     this.showResult(character);
   }

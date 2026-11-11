@@ -19,32 +19,36 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 - [x] Lưu tiến trình; tu tiên tích linh khí cả khi tắt game
 - [ ] Chơi thử và chỉnh con số (tốc độ, năng lượng cần)
 
-## M2 — Chiến đấu theo lượt
+## M2 — Bản đồ lịch luyện
+
+- [x] Hai tầng chơi: bản thể (thời gian thật) và lịch luyện kiếp (lịch trong game)
+- [x] Bản đồ Lạc Thành với 10 địa danh, kéo để xem
+- [x] Di chuyển theo đường nối, lịch trôi theo số ngày đi
+- [x] Bế quan theo tháng, linh khí khác nhau từng nơi
+- [x] Tuổi thọ, kết thúc kiếp, nhận điểm luân hồi
+- [ ] Sự kiện dạng văn bản có lựa chọn
+- [ ] Việc thường nhật ở từng địa điểm
+- [ ] Màu viền báo mức nguy hiểm
+
+## M3 — Chiến đấu theo lượt
 
 - [ ] Màn hình trận đấu một đấu một
 - [ ] Đánh thường, kỹ năng, phòng thủ
-- [ ] 2-3 loại kẻ địch
-- [ ] Phần thưởng sau trận
+- [ ] Dị thú ở Hắc Thủy và Cúc Phương
+- [ ] Phần thưởng sau trận: linh thạch, nguyên liệu
 
-Hết M2 là có bản MVP: tu luyện → chiến đấu → đột phá.
+## M4 — Điểm luân hồi, linh thạch, giải đố
 
-## M3 — Khám phá
-
-- [ ] Bản đồ thành phố dạng các điểm nối nhau
-- [ ] Sự kiện tại mỗi điểm
-- [ ] Túi đồ và vật phẩm
-
-## M4 — Giải đố
-
-- [ ] Chọn loại câu đố
-- [ ] Bí cảnh đầu tiên mở bằng câu đố
-- [ ] Kiếp nạn khi đột phá
+- [ ] Cửa hàng điểm luân hồi ở thế giới chính
+- [ ] Xuất thân và lợi thế đầu kiếp
+- [ ] Phường thị mua bán bằng linh thạch
+- [ ] Bí cảnh Phong Nha với câu đố đầu tiên
 
 ## M5 — Nhánh phụ, dị năng, luân hồi
 
 - [ ] Tu nhánh phụ (tốc độ một nửa)
 - [ ] Dị hạch, thức tỉnh và nâng phẩm chất dị năng (tối đa 5)
-- [ ] Tuổi thọ và luân hồi
+- [ ] Nhiệm vụ chính tuyến và cốt truyện cho bản thể
 - [ ] Linh giới, Tiên giới, thêm khu vực và kẻ địch
 - [ ] Cân bằng chỉ số
 

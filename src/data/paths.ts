@@ -58,7 +58,7 @@ export const PATHS: Record<PathId, PathDef> = {
     energyName: 'Linh khí',
     color: 0x7fd4ff,
     description: 'Hấp thụ linh khí, luyện pháp thuật.\nTốc độ tu phụ thuộc linh căn.',
-    trait: 'Tu luyện cả khi tắt game',
+    trait: 'Bế quan hiệu quả hơn 25%',
     tiers: ['Luyện Khí', 'Trúc Cơ', 'Kim Đan', 'Nguyên Anh', 'Hóa Thần'],
     gains: { linhLuc: 3, thanThuc: 1, ngoTinh: 1 },
     costMultiplier: 1,

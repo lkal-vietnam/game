@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from './config';
 import { CreateScene } from './scenes/CreateScene';
 import { CultivateScene } from './scenes/CultivateScene';
+import { MapScene } from './scenes/MapScene';
 
 // CultivateScene đứng đầu: nếu chưa có nhân vật, nó tự chuyển sang CreateScene.
 new Phaser.Game({
@@ -14,5 +15,5 @@ new Phaser.Game({
     width: GAME_WIDTH,
     height: GAME_HEIGHT,
   },
-  scene: [CultivateScene, CreateScene],
+  scene: [CultivateScene, CreateScene, MapScene],
 });

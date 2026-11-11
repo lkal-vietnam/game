@@ -21,7 +21,13 @@ export function label(
     .setOrigin(0.5);
 }
 
+type Pinnable = Phaser.GameObjects.GameObject &
+  Phaser.GameObjects.Components.ScrollFactor &
+  Phaser.GameObjects.Components.Depth;
+
 export interface Button {
+  /** Các đối tượng tạo nên nút, để ghim lên giao diện hoặc xóa đi. */
+  objects: Pinnable[];
   setLabel(text: string): void;
   setEnabled(enabled: boolean): void;
   destroy(): void;
@@ -36,9 +42,10 @@ export function button(
   text: string,
   color: number,
   onClick: () => void,
+  fontSize = 30,
 ): Button {
   const box = scene.add.rectangle(x, y, width, height, color, 1).setStrokeStyle(2, 0xffffff, 0.25);
-  const caption = label(scene, x, y, text, 30, '#0b0f1a');
+  const caption = label(scene, x, y, text, fontSize, '#0b0f1a');
   let enabled = true;
   box.setInteractive({ useHandCursor: true });
   box.on('pointerdown', () => {
@@ -47,6 +54,7 @@ export function button(
     onClick();
   });
   return {
+    objects: [box, caption],
     setLabel: (value) => caption.setText(value),
     setEnabled: (value) => {
       enabled = value;
@@ -60,6 +68,19 @@ export function button(
   };
 }
 
+/** Ghim đối tượng lên giao diện: không trôi theo camera, nằm trên bản đồ. */
+export function pin<T extends Pinnable>(items: T[], depth = 100): T[] {
+  items.forEach((item) => {
+    item.setScrollFactor(0);
+    item.setDepth(depth);
+  });
+  return items;
+}
+
 export function formatNumber(value: number): string {
   return Math.floor(value).toLocaleString('vi-VN');
+}
+
+export function hexColor(color: number): string {
+  return `#${color.toString(16).padStart(6, '0')}`;
 }

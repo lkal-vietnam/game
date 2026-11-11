@@ -21,14 +21,26 @@ Quy ước dùng từ: dùng "pháp" (pháp thuật, sát thương pháp thuật
 
 Thế giới hiện đại nơi linh khí bất ngờ quay trở lại. Giữa thành phố, con người bắt đầu thức tỉnh theo ba con đường: tu tiên, dị năng và thể tu. Phía trên Nhân giới còn có Linh giới và Tiên giới.
 
-## 3. Vòng lặp chính (đề xuất)
+## 3. Hai tầng chơi (đã chốt)
 
-1. **Tu luyện** để tích lũy năng lượng và tăng chỉ số.
-2. **Khám phá** các địa điểm trên bản đồ để gặp sự kiện, tìm tài nguyên.
-3. **Chiến đấu** theo lượt với dị thú hoặc người thức tỉnh khác.
-4. **Giải đố** để mở bí cảnh hoặc vượt kiếp nạn khi đột phá.
-5. **Đột phá** cảnh giới, mở khu vực và kỹ năng mới.
-6. Hết tuổi thọ hoặc chết trong bí cảnh thì **luân hồi** và bắt đầu kiếp mới.
+Game có hai tầng chạy song song:
+
+**Thế giới chính (bản thể)**
+
+- Bản thể chọn nhánh chính một lần và giữ mãi. Không già, không chết.
+- Bế quan theo thời gian thật, kể cả khi tắt game.
+- Lối chơi đơn giản hơn: đánh quái, làm nhiệm vụ chính tuyến, đi theo một cốt truyện.
+- Tiêu điểm luân hồi để mua đồ và lợi thế.
+
+**Lịch luyện kiếp**
+
+- Bản thể gửi hồn vào một kiếp khác. Mỗi kiếp quay mới linh căn, thiên phú, xuất thân.
+- Kiếp sống trên bản đồ, có lịch ngày tháng năm. Lịch chỉ trôi khi làm việc gì đó (di chuyển, bế quan, khám phá); tắt game thì không trôi.
+- Bắt đầu 12 tuổi, thọ 100. Đột phá thì thọ nguyên tăng và mở bản đồ cao hơn. Phần khám phá bản đồ chủ yếu nằm ở tầng này.
+- Hết thọ hoặc chết trong bí cảnh thì kiếp kết thúc, hồn về bản thể và nhận điểm luân hồi.
+- Bản thể ở giới nào thì các kiếp bắt đầu ở giới đó (bản thể lên Linh giới thì kiếp ở Linh giới).
+
+**Đề xuất chờ duyệt:** bản thể muốn đột phá bậc lớn cần *cảm ngộ* chỉ kiếm được trong các kiếp, để hai tầng cần nhau.
 
 ## 4. Ba nhánh tu luyện (đã chốt)
 
@@ -38,7 +50,7 @@ Thế giới hiện đại nơi linh khí bất ngờ quay trở lại. Giữa t
 
 | Nhánh | Năng lượng | Tăng mạnh | Tăng nhẹ | Đặc tính khi là nhánh chính |
 | --- | --- | --- | --- | --- |
-| Tu tiên | Linh khí | Linh lực | Thần thức, Ngộ tính | Tu luyện cả khi tắt game; pháp thuật đánh được nhiều mục tiêu |
+| Tu tiên | Linh khí | Linh lực | Thần thức, Ngộ tính | Bế quan hiệu quả hơn 25%; pháp thuật đánh được nhiều mục tiêu |
 | Thể tu | Khí huyết | Thể chất, Sức mạnh | Mọi chỉ số còn lại | Hồi máu mỗi lượt; khó bị khống chế; đòn thường không tốn năng lượng |
 | Dị năng | Tinh thần lực | Thần thức | Thân pháp | Có một dị năng bản mệnh từ đầu (phẩm chất A trở lên), mạnh lên theo cảnh giới |
 
@@ -111,26 +123,46 @@ Tỉ lệ quay là con số tạm, sẽ chỉnh khi chơi thử.
 
 - Phẩm chất do dị hạch quyết định; nâng được bằng cách hấp thụ thêm hạch cùng hệ **(đề xuất)**.
 
-## 9. Luân hồi
+## 9. Luân hồi và điểm luân hồi (đã chốt)
+
+- Kiếp kết thúc khi hết thọ nguyên hoặc chết trong bí cảnh.
+- Kiếp sau bắt đầu lại từ đầu và quay lại linh căn. Không mang theo vật phẩm, dị năng hay cảnh giới của kiếp trước.
+- Thứ duy nhất mang về là **điểm luân hồi**, cộng theo lịch luyện của kiếp đó.
+- Điểm luân hồi dùng để mua đồ ở thế giới chính và các hỗ trợ đầu kiếp: xuất thân, pháp bảo khởi đầu, linh thạch ban đầu, tăng xác suất ra linh căn hoặc thiên phú cao.
+- **Linh thạch** là tiền tệ trong game.
+- Thọ nguyên theo bậc của kiếp **(con số là đề xuất)**: 100, 200, 500, 1.000, 2.000 năm cho bậc 1 đến 5.
+- Công thức điểm hiện tại **(tạm)**: 10 điểm mỗi giai đoạn đã vượt, cộng 1 điểm mỗi 10 năm đã sống.
+
+## 10. Bản đồ lịch luyện
 
 **Đã chốt:**
 
-- Nhân vật có tuổi thọ giới hạn. Hết tuổi thọ hoặc chết trong bí cảnh thì luân hồi.
-- Kiếp sau bắt đầu lại từ đầu và quay lại linh căn. Không mang theo vật phẩm, dị năng hay cảnh giới.
-- Thứ duy nhất mang sang là **điểm luân hồi**, được cộng theo lịch luyện của kiếp trước.
-- Điểm luân hồi dùng để mua các hỗ trợ đầu kiếp, ví dụ: xuất thân, pháp bảo khởi đầu, số linh thạch ban đầu, tăng xác suất ra linh căn hoặc thiên phú cao.
-- **Linh thạch** là tiền tệ trong game.
+- Bản đồ rộng, các chấm là địa điểm cần đến. Di chuyển chỉ làm lịch trong game trôi, không phải chờ thời gian thật.
+- Thành phố hư cấu **Lạc Thành**, địa danh mượn tên đẹp ở Việt Nam.
 
-**Đề xuất:**
+| Địa danh | Loại | Linh khí |
+| --- | --- | --- |
+| Ngõ Hàng Mây | Nhà (nơi bắt đầu) | ×1 |
+| Chợ đêm Đồng Xuân | Phường thị | ×0,8 |
+| Ga Long Biên | Ga tàu | ×0,8 |
+| Hồ Tịnh Tâm | Linh mạch nhỏ | ×1,5 |
+| Tháp Bạch Mã | Hiệp hội dị năng | ×1 |
+| Võ quán Tây Sơn | Võ quán thể tu | ×1 |
+| Khu xưởng Hắc Thủy | Vùng dị thú | ×1,2 |
+| Đạo quán Yên Tử | Tông môn tu tiên | ×2,5 |
+| Rừng Cúc Phương | Vùng dị thú | ×2 |
+| Động Phong Nha | Bí cảnh | ×1,8 |
 
-- Mỗi bậc cảnh giới kéo dài tuổi thọ (ví dụ Luyện Khí 100 năm, Trúc Cơ 200, Kim Đan 500, Nguyên Anh 1.000, Hóa Thần 2.000).
-- Điểm luân hồi tính theo cảnh giới cao nhất, số bí cảnh đã vượt, số dị thú đã hạ.
-- Thua trận thường chỉ bị thương; chỉ bí cảnh và kiếp nạn mới có thể chết.
+**Đề xuất (học từ game tham khảo):**
 
-## 10. Các hệ thống khác (đề xuất)
+- Chấm địa danh cố định và chấm sự kiện xuất hiện rồi biến mất sau một thời gian.
+- Màu viền báo mức nguy hiểm so với sức mình.
+- Mỗi địa điểm có việc thường nhật giới hạn số lần (săn dị thú, thăm dò).
+- Sự kiện dạng đoạn văn ngắn với 2-3 lựa chọn, kết quả theo chỉ số và khí vận.
+
+## 10b. Các hệ thống khác (đề xuất)
 
 - **Chiến đấu:** theo lượt, một đấu một ở bản đầu. Đánh thường, kỹ năng, phòng thủ, vật phẩm.
-- **Khám phá:** bản đồ gồm các điểm nối nhau; mỗi điểm là một sự kiện.
 - **Giải đố:** cửa ải mở bí cảnh, phá trận pháp, vượt tâm ma. Loại câu đố chưa quyết định.
 
 ## 11. Chơi hai người (đã chốt)

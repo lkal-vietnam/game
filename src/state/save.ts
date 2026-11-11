@@ -2,7 +2,9 @@ import { SAVE_KEY } from '../config';
 import type { PathId, Stats } from '../data/paths';
 import type { DiNang, LinhCan } from '../data/talents';
 
+/** Bản thể: tu luyện ở thế giới chính theo thời gian thật, không già, không chết. */
 export interface Character {
+  /** Nhánh chính, chọn một lần và giữ mãi. */
   path: PathId;
   linhCan: LinhCan;
   /** Dị năng bản mệnh, chỉ có khi nhánh chính là dị năng. */
@@ -13,8 +15,26 @@ export interface Character {
   stage: number;
   energy: number;
   stats: Stats;
-  /** Mốc thời gian (ms) lần cuối cập nhật, dùng để tính tu luyện khi vắng mặt. */
+  /** Mốc thời gian (ms) lần cuối cập nhật, dùng để tính bế quan khi vắng mặt. */
   lastSeen: number;
+}
+
+/** Một kiếp lịch luyện: sống trên bản đồ, có lịch và tuổi thọ. */
+export interface Life {
+  /** Kiếp thứ mấy, bắt đầu từ 1. */
+  index: number;
+  path: PathId;
+  linhCan: LinhCan;
+  banMenh: DiNang | null;
+  tier: number;
+  stage: number;
+  energy: number;
+  stats: Stats;
+  /** Số ngày đã trôi qua trong kiếp này. */
+  days: number;
+  /** Mã địa danh đang đứng. */
+  location: string;
+  linhThach: number;
 }
 
 /**
@@ -24,19 +44,27 @@ export interface Character {
 export interface SaveData {
   version: 2;
   character: Character | null;
+  life: Life | null;
+  luanHoiPoints: number;
+  livesLived: number;
+}
+
+export function emptySave(): SaveData {
+  return { version: 2, character: null, life: null, luanHoiPoints: 0, livesLived: 0 };
 }
 
 export function loadSave(): SaveData {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (raw) {
-      const parsed = JSON.parse(raw) as SaveData;
-      if (parsed.version === 2) return parsed;
+      const parsed = JSON.parse(raw) as Partial<SaveData>;
+      // Bản lưu cũ chưa có các trường về kiếp: bù giá trị mặc định.
+      if (parsed.version === 2) return { ...emptySave(), ...parsed };
     }
   } catch {
     // Dữ liệu hỏng hoặc trình duyệt chặn: coi như chưa có bản lưu.
   }
-  return { version: 2, character: null };
+  return emptySave();
 }
 
 export function writeSave(data: SaveData): void {
