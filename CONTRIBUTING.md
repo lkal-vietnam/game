@@ -34,7 +34,7 @@ public/assets/   Hình ảnh, âm thanh
 src/
   main.ts        Điểm khởi động game
   config.ts      Hằng số chung
-  data/          Bảng dữ liệu: nhánh, cảnh giới, linh căn
+  data/          Bảng dữ liệu: nhánh, cảnh giới, linh căn, bản đồ, sự kiện
   scenes/        Mỗi màn hình là một file
   state/         Dữ liệu người chơi, lưu và tải
   systems/       Luật chơi (tu luyện, đột phá), không dính tới hình ảnh

@@ -1,15 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from '../config';
-import {
-  findRoute,
-  MAP_HEIGHT,
-  MAP_WIDTH,
-  PLACES,
-  PLACE_TYPES,
-  placeById,
-  ROADS,
-  type Place,
-} from '../data/map';
+import { eventById, type Choice, type GameEvent, type Outcome } from '../data/events';
+import { findRoute, MAP_HEIGHT, MAP_WIDTH, PLACES, PLACE_TYPES, placeById, type Place } from '../data/map';
 import { PATHS, STAT_LABELS, type Stats } from '../data/paths';
 import { loadSave, writeSave, type Life, type SaveData } from '../state/save';
 import { advance, canAdvance, energyRequired, isAtPeak, isBreakthrough, realmName } from '../systems/cultivation';
@@ -23,10 +15,13 @@ import {
   monthlyGain,
   seclude,
 } from '../systems/life';
+import { canChoose, refreshEvents, resolveChoice, successChance } from '../systems/events';
 import { button, formatNumber, hexColor, label, pin } from '../ui/widgets';
+import { drawTerrain } from './mapArt';
 
 const HUD_HEIGHT = 190;
 const PANEL_TOP = 950;
+const SEA_MARGIN = 160;
 const BAR_WIDTH = 420;
 
 type Destroyable = { destroy(): void };
@@ -45,6 +40,7 @@ export class MapScene extends Phaser.Scene {
   private barFill!: Phaser.GameObjects.Rectangle;
   private panel: Destroyable[] = [];
   private rings = new Map<string, Phaser.GameObjects.Arc>();
+  private badges: Destroyable[] = [];
 
   constructor() {
     super('Map');
@@ -59,6 +55,7 @@ export class MapScene extends Phaser.Scene {
     this.busy = false;
     this.panel = [];
     this.rings = new Map();
+    this.badges = [];
 
     let isNewLife = false;
     if (!this.save.life) {
@@ -68,6 +65,8 @@ export class MapScene extends Phaser.Scene {
     }
     this.life = this.save.life;
     this.selected = this.life.location;
+    refreshEvents(this.life);
+    writeSave(this.save);
 
     this.drawMap();
     this.drawHud();
@@ -81,19 +80,7 @@ export class MapScene extends Phaser.Scene {
   // ---------- Bản đồ ----------
 
   private drawMap(): void {
-    this.add.rectangle(MAP_WIDTH / 2, MAP_HEIGHT / 2, MAP_WIDTH, MAP_HEIGHT, 0x0d1422);
-    // Vùng nội thành sáng hơn vùng hoang dã xung quanh.
-    this.add.ellipse(750, 950, 980, 820, 0x18233a, 1).setStrokeStyle(3, 0x2c3d5e, 1);
-    label(this, 750, 1195, 'LẠC THÀNH', 30, '#2f4264');
-
-    const roads = this.add.graphics();
-    for (const [a, b, days] of ROADS) {
-      const from = placeById(a);
-      const to = placeById(b);
-      const far = days >= 10;
-      roads.lineStyle(far ? 3 : 5, far ? 0x33415c : 0x475a80, far ? 0.7 : 1);
-      roads.lineBetween(from.x, from.y, to.x, to.y);
-    }
+    drawTerrain(this);
 
     PLACES.forEach((place) => this.drawPlace(place));
 
@@ -108,7 +95,9 @@ export class MapScene extends Phaser.Scene {
   private drawPlace(place: Place): void {
     const type = PLACE_TYPES[place.type];
     // Mây linh khí: nơi linh khí càng đậm thì quầng sáng càng lớn.
-    const cloud = this.add.circle(place.x, place.y, 40 + place.linhKhi * 28, 0x5fe0c2, 0.05 + place.linhKhi * 0.04);
+    const cloud = this.add
+      .circle(place.x, place.y, 40 + place.linhKhi * 28, 0x7ff5d8, 0.08 + place.linhKhi * 0.06)
+      .setDepth(4);
     this.tweens.add({
       targets: cloud,
       scale: 1.18,
@@ -119,15 +108,22 @@ export class MapScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
-    const ring = this.add.circle(place.x, place.y, 46, 0x000000, 0).setStrokeStyle(4, 0xffffff, 1).setVisible(false);
+    if (place.linhKhi >= 1.5) this.spawnMotes(place);
+
+    const ring = this.add
+      .circle(place.x, place.y, 46, 0x000000, 0)
+      .setStrokeStyle(4, 0xffffff, 1)
+      .setVisible(false)
+      .setDepth(6);
     this.rings.set(place.id, ring);
 
     const body = this.add
       .circle(place.x, place.y, 36, 0x101828, 1)
       .setStrokeStyle(5, type.color, 1)
+      .setDepth(5)
       .setInteractive({ useHandCursor: true });
-    label(this, place.x, place.y, type.icon, 34);
-    label(this, place.x, place.y + 62, place.name, 22, '#c9d4e8');
+    label(this, place.x, place.y, type.icon, 34).setDepth(6);
+    label(this, place.x, place.y + 62, place.name, 22, '#ffffff').setStroke('#0b0f1a', 6).setDepth(6);
 
     body.on('pointerup', (pointer: Phaser.Input.Pointer) => {
       // Kéo bản đồ rồi nhả tay trên một chấm thì không tính là chọn.
@@ -137,9 +133,32 @@ export class MapScene extends Phaser.Scene {
     });
   }
 
+  /** Đốm linh khí bay lên ở những nơi linh khí đậm. */
+  private spawnMotes(place: Place): void {
+    const count = Math.round(place.linhKhi * 3);
+    for (let i = 0; i < count; i += 1) {
+      const startX = place.x + (i / count - 0.5) * 110;
+      const mote = this.add.circle(startX, place.y + 20, 3, 0xa8ffe9, 0).setDepth(7);
+      this.tweens.add({
+        targets: mote,
+        y: place.y - 90,
+        x: startX + (i % 2 === 0 ? 14 : -14),
+        alpha: { from: 0.9, to: 0 },
+        duration: 2200 + i * 260,
+        delay: i * 420,
+        repeat: -1,
+      });
+    }
+  }
+
   private setupCamera(): void {
     const camera = this.cameras.main;
-    camera.setBounds(0, -HUD_HEIGHT, MAP_WIDTH, MAP_HEIGHT + HUD_HEIGHT + (GAME_HEIGHT - PANEL_TOP));
+    camera.setBounds(
+      -SEA_MARGIN,
+      -SEA_MARGIN - HUD_HEIGHT,
+      MAP_WIDTH + SEA_MARGIN * 2,
+      MAP_HEIGHT + SEA_MARGIN * 2 + HUD_HEIGHT + (GAME_HEIGHT - PANEL_TOP),
+    );
     const here = placeById(this.life.location);
     camera.centerOn(here.x, here.y);
 
@@ -177,7 +196,7 @@ export class MapScene extends Phaser.Scene {
     const life = this.life;
     this.dateText.setText(`Kiếp thứ ${life.index}  ·  ${dateLabel(life)}`);
     this.realmText.setText(realmName(life));
-    this.ageText.setText(`Tuổi ${ageYears(life)} / ${lifespan(life)}`);
+    this.ageText.setText(`Tuổi ${ageYears(life)} / ${lifespan(life)}   ·   Linh thạch ${life.linhThach}`);
     if (isAtPeak(life)) {
       this.barFill.setDisplaySize(BAR_WIDTH, 16);
       this.energyText.setText(formatNumber(life.energy));
@@ -195,6 +214,7 @@ export class MapScene extends Phaser.Scene {
     this.panel.forEach((item) => item.destroy());
     this.panel = [];
     this.rings.forEach((ring, id) => ring.setVisible(id === this.selected));
+    this.renderBadges();
 
     const cx = GAME_WIDTH / 2;
     const place = placeById(this.selected);
@@ -204,7 +224,12 @@ export class MapScene extends Phaser.Scene {
     const line = this.add.rectangle(cx, PANEL_TOP, GAME_WIDTH, 2, 0xffffff, 0.15);
     const title = label(this, cx, PANEL_TOP + 42, place.name, 36, hexColor(type.color));
     const subtitle = label(this, cx, PANEL_TOP + 86, `${type.label}  ·  Linh khí ×${place.linhKhi}`, 24, '#5fe0c2');
-    const description = label(this, cx, PANEL_TOP + 126, place.description, 22, '#8a94a8');
+    const active = this.life.events.find((item) => item.placeId === place.id);
+    const event = active ? eventById(active.eventId) : undefined;
+    const monthsLeft = active ? Math.max(1, Math.ceil((active.expiresDay - this.life.days) / 30)) : 0;
+    const description = event
+      ? label(this, cx, PANEL_TOP + 126, `Sự kiện: ${event.title}  ·  còn ${monthsLeft} tháng`, 22, '#ffd36b')
+      : label(this, cx, PANEL_TOP + 126, place.description, 22, '#8a94a8');
     this.panel.push(...pin([bg, line, title, subtitle, description]));
 
     const color = PATHS[this.life.path].color;
@@ -221,16 +246,16 @@ export class MapScene extends Phaser.Scene {
     const perMonth = monthlyGain(this.life, place.linhKhi);
     const options: [string, number][] = [
       ['1 tháng', 1],
-      ['6 tháng', 6],
       ['1 năm', 12],
+      ['5 năm', 60],
     ];
     options.forEach(([text, months], index) => {
       const item = button(
         this,
         cx - 230 + index * 230,
-        PANEL_TOP + 195,
+        PANEL_TOP + 188,
         210,
-        70,
+        62,
         `Bế quan ${text}`,
         0xc9d4e8,
         () => this.doSeclude(months, place),
@@ -238,7 +263,7 @@ export class MapScene extends Phaser.Scene {
       );
       this.panel.push(item, ...pin(item.objects, 101));
     });
-    const rate = label(this, cx, PANEL_TOP + 248, `+${perMonth.toFixed(1)} mỗi tháng tại đây`, 20, '#8a94a8');
+    const rate = label(this, cx, PANEL_TOP + 236, `+${perMonth.toFixed(1)} mỗi tháng tại đây`, 20, '#8a94a8');
     this.panel.push(...pin([rate]));
 
     const caption = isAtPeak(this.life)
@@ -246,9 +271,24 @@ export class MapScene extends Phaser.Scene {
       : isBreakthrough(this.life)
         ? 'Đột phá'
         : 'Lên giai đoạn';
-    const up = button(this, cx, PANEL_TOP + 292, 460, 62, caption, color, () => this.doAdvance(), 26);
+    const hasEvent = event !== undefined;
+    const up = button(
+      this,
+      hasEvent ? cx - 175 : cx,
+      PANEL_TOP + 290,
+      hasEvent ? 330 : 460,
+      58,
+      caption,
+      color,
+      () => this.doAdvance(),
+      24,
+    );
     up.setEnabled(canAdvance(this.life));
     this.panel.push(up, ...pin(up.objects, 101));
+    if (event) {
+      const open = button(this, cx + 175, PANEL_TOP + 290, 330, 58, 'Xem sự kiện', 0xffd36b, () => this.openEvent(event), 24);
+      this.panel.push(open, ...pin(open.objects, 101));
+    }
   }
 
   // ---------- Hành động ----------
@@ -305,10 +345,12 @@ export class MapScene extends Phaser.Scene {
     const summary = (Object.keys(gained) as (keyof Stats)[])
       .map((key) => `${STAT_LABELS[key]} +${gained[key]}`)
       .join('   ');
-    this.afterTimePassed(major ? `Đột phá! Thọ nguyên tăng lên ${lifespan(this.life)}` : summary);
+    if (major) this.save.camNgo += 1;
+    this.afterTimePassed(major ? `Đột phá! Thọ nguyên ${lifespan(this.life)} năm  ·  +1 cảm ngộ` : summary);
   }
 
   private afterTimePassed(message: string): void {
+    refreshEvents(this.life);
     writeSave(this.save);
     this.refreshHud();
     this.renderPanel();
@@ -328,6 +370,91 @@ export class MapScene extends Phaser.Scene {
       duration: 900,
       onComplete: () => note.destroy(),
     });
+  }
+
+  // ---------- Sự kiện ----------
+
+  private renderBadges(): void {
+    this.badges.forEach((item) => item.destroy());
+    this.badges = [];
+    for (const active of this.life.events) {
+      const place = placeById(active.placeId);
+      const dot = this.add.circle(place.x + 30, place.y - 30, 17, 0xffd36b, 1).setStrokeStyle(3, 0x0b0f1a, 1).setDepth(8);
+      const mark = label(this, place.x + 30, place.y - 30, '!', 26, '#0b0f1a').setDepth(9);
+      this.tweens.add({ targets: [dot, mark], scale: 1.25, duration: 500, yoyo: true, repeat: -1 });
+      this.badges.push(dot, mark);
+    }
+  }
+
+  private dialog(build: (add: (item: Destroyable) => void, close: () => void) => void): void {
+    this.busy = true;
+    const items: Destroyable[] = [];
+    const cx = GAME_WIDTH / 2;
+    const backdrop = this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x05080f, 0.93).setInteractive();
+    items.push(...pin([backdrop], 200));
+    build(
+      (item) => items.push(item),
+      () => {
+        items.forEach((item) => item.destroy());
+        this.busy = false;
+      },
+    );
+  }
+
+  private openEvent(event: GameEvent): void {
+    if (this.busy) return;
+    const cx = GAME_WIDTH / 2;
+    this.dialog((add, close) => {
+      const title = label(this, cx, 250, event.title, 40, '#ffd36b');
+      const where = label(this, cx, 305, placeById(this.life.location).name, 22, '#8a94a8');
+      const body = label(this, cx, 350, event.text, 27, '#e8f0ff').setOrigin(0.5, 0);
+      body.setWordWrapWidth(620).setLineSpacing(8);
+      pin([title, where, body], 201).forEach(add);
+
+      event.choices.forEach((choice, index) => {
+        const chance = Math.round(successChance(this.life, choice) * 100);
+        const text = choice.check ? `${choice.text}  ·  ${chance}%` : choice.text;
+        const item = button(this, cx, 760 + index * 92, 660, 76, text, 0xc9d4e8, () => {
+          close();
+          this.pickChoice(event, choice);
+        }, 22);
+        item.setEnabled(canChoose(this.life, choice));
+        pin(item.objects, 202);
+        add(item);
+      });
+    });
+  }
+
+  private pickChoice(event: GameEvent, choice: Choice): void {
+    const { outcome, success } = resolveChoice(this.life, choice);
+    this.life.events = this.life.events.filter((item) => item.eventId !== event.id);
+    const cx = GAME_WIDTH / 2;
+    this.dialog((add, close) => {
+      const title = label(this, cx, 300, event.title, 40, '#ffd36b');
+      const verdict = choice.fail
+        ? label(this, cx, 360, success ? 'Thành công' : 'Thất bại', 26, success ? '#9dffb0' : '#ff8a8a')
+        : label(this, cx, 360, ' ', 26);
+      const body = label(this, cx, 420, outcome.text, 28, '#e8f0ff').setOrigin(0.5, 0);
+      body.setWordWrapWidth(620).setLineSpacing(8);
+      const effects = label(this, cx, 760, this.describe(outcome), 26, '#9dffb0');
+      effects.setWordWrapWidth(640);
+      pin([title, verdict, body, effects], 201).forEach(add);
+      const next = button(this, cx, 880, 420, 84, 'Tiếp tục', PATHS[this.life.path].color, () => {
+        close();
+        this.afterTimePassed(outcome.days ? `Trôi qua ${outcome.days} ngày` : ' ');
+      });
+      pin(next.objects, 202);
+      add(next);
+    });
+  }
+
+  private describe(outcome: Outcome): string {
+    const parts: string[] = [];
+    if (outcome.energy) parts.push(`${PATHS[this.life.path].energyName} +${outcome.energy}`);
+    if (outcome.linhThach) parts.push(`Linh thạch ${outcome.linhThach > 0 ? '+' : ''}${outcome.linhThach}`);
+    if (outcome.stat) parts.push(`${STAT_LABELS[outcome.stat[0]]} +${outcome.stat[1]}`);
+    if (outcome.days) parts.push(`${outcome.days} ngày`);
+    return parts.length > 0 ? parts.join('   ·   ') : 'Không có gì thay đổi';
   }
 
   // ---------- Mở đầu và kết thúc kiếp ----------

@@ -26,7 +26,10 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 - [x] Di chuyển theo đường nối, lịch trôi theo số ngày đi
 - [x] Bế quan theo tháng, linh khí khác nhau từng nơi
 - [x] Tuổi thọ, kết thúc kiếp, nhận điểm luân hồi
-- [ ] Sự kiện dạng văn bản có lựa chọn
+- [x] Sự kiện dạng văn bản có lựa chọn (11 sự kiện đầu tiên)
+- [x] Bản đồ vẽ kiểu bản đồ thế giới, có chuyển động
+- [x] Cảm ngộ nối kiếp với bản thể
+- [ ] Viết thêm sự kiện, sự kiện nối tiếp nhau
 - [ ] Việc thường nhật ở từng địa điểm
 - [ ] Màu viền báo mức nguy hiểm
 

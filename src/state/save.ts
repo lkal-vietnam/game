@@ -35,6 +35,15 @@ export interface Life {
   /** Mã địa danh đang đứng. */
   location: string;
   linhThach: number;
+  /** Các sự kiện đang hiện trên bản đồ. */
+  events: ActiveEvent[];
+}
+
+export interface ActiveEvent {
+  eventId: string;
+  placeId: string;
+  /** Ngày (tính từ đầu kiếp) mà sự kiện biến mất. */
+  expiresDay: number;
 }
 
 /**
@@ -47,10 +56,12 @@ export interface SaveData {
   life: Life | null;
   luanHoiPoints: number;
   livesLived: number;
+  /** Cảm ngộ: kiếm trong các kiếp, bản thể cần để đột phá bậc lớn. */
+  camNgo: number;
 }
 
 export function emptySave(): SaveData {
-  return { version: 2, character: null, life: null, luanHoiPoints: 0, livesLived: 0 };
+  return { version: 2, character: null, life: null, luanHoiPoints: 0, livesLived: 0, camNgo: 0 };
 }
 
 export function loadSave(): SaveData {
@@ -59,7 +70,11 @@ export function loadSave(): SaveData {
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<SaveData>;
       // Bản lưu cũ chưa có các trường về kiếp: bù giá trị mặc định.
-      if (parsed.version === 2) return { ...emptySave(), ...parsed };
+      if (parsed.version === 2) {
+        const save = { ...emptySave(), ...parsed };
+        if (save.life) save.life.events ??= [];
+        return save;
+      }
     }
   } catch {
     // Dữ liệu hỏng hoặc trình duyệt chặn: coi như chưa có bản lưu.

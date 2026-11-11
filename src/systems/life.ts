@@ -10,7 +10,8 @@ export const START_AGE = 12;
 /** Tuổi thọ theo bậc cảnh giới của kiếp (bậc 1 đến 5). */
 const LIFESPAN_BY_TIER = [100, 200, 500, 1000, 2000];
 /** Năng lượng mỗi tháng bế quan ở nơi linh khí ×1, bậc 1. */
-const MONTHLY_BASE = 10;
+const MONTHLY_BASE = 1;
+const START_LINH_THACH = 30;
 
 export function createLife(path: PathId, index: number, rng: () => number = Math.random): Life {
   return {
@@ -24,7 +25,8 @@ export function createLife(path: PathId, index: number, rng: () => number = Math
     stats: { ...BASE_STATS },
     days: 0,
     location: START_PLACE,
-    linhThach: 0,
+    linhThach: START_LINH_THACH,
+    events: [],
   };
 }
 

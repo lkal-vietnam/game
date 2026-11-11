@@ -91,7 +91,7 @@ export class CultivateScene extends Phaser.Scene {
       this,
       cx,
       1160,
-      `Đã trải ${this.save.livesLived} kiếp  ·  Điểm luân hồi: ${this.save.luanHoiPoints}`,
+      `Đã trải ${this.save.livesLived} kiếp  ·  Điểm luân hồi ${this.save.luanHoiPoints}  ·  Cảm ngộ ${this.save.camNgo}`,
       22,
       '#8a94a8',
     );
@@ -165,14 +165,18 @@ export class CultivateScene extends Phaser.Scene {
     this.energyText.setText(
       `${def.energyName}: ${formatNumber(this.c.energy)} / ${formatNumber(required)}`,
     );
-    this.advanceButton.setLabel(isBreakthrough(this.c) ? 'Đột phá' : 'Lên giai đoạn');
-    this.advanceButton.setEnabled(canAdvance(this.c));
+    const major = isBreakthrough(this.c);
+    this.advanceButton.setLabel(major ? `Đột phá (cảm ngộ ${this.save.camNgo}/1)` : 'Lên giai đoạn');
+    this.advanceButton.setEnabled(canAdvance(this.c) && (!major || this.save.camNgo >= 1));
   }
 
   private tryAdvance(): void {
     const major = isBreakthrough(this.c);
+    // Đột phá bậc lớn của bản thể cần một cảm ngộ kiếm từ các kiếp lịch luyện.
+    if (major && this.save.camNgo < 1) return;
     const gained = advance(this.c);
     if (!gained) return;
+    if (major) this.save.camNgo -= 1;
     this.persist();
     this.refresh();
     if (this.statsPanel.length > 0) {

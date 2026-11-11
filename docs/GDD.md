@@ -40,7 +40,7 @@ Game có hai tầng chạy song song:
 - Hết thọ hoặc chết trong bí cảnh thì kiếp kết thúc, hồn về bản thể và nhận điểm luân hồi.
 - Bản thể ở giới nào thì các kiếp bắt đầu ở giới đó (bản thể lên Linh giới thì kiếp ở Linh giới).
 
-**Đề xuất chờ duyệt:** bản thể muốn đột phá bậc lớn cần *cảm ngộ* chỉ kiếm được trong các kiếp, để hai tầng cần nhau.
+**Cảm ngộ nối hai tầng:** mỗi lần một kiếp đột phá bậc lớn, bản thể nhận 1 cảm ngộ. Bản thể muốn đột phá bậc lớn phải tiêu 1 cảm ngộ.
 
 ## 4. Ba nhánh tu luyện (đã chốt)
 
@@ -153,12 +153,14 @@ Tỉ lệ quay là con số tạm, sẽ chỉnh khi chơi thử.
 | Rừng Cúc Phương | Vùng dị thú | ×2 |
 | Động Phong Nha | Bí cảnh | ×1,8 |
 
+- Bản đồ vẽ kiểu bản đồ thế giới (biển, bờ cát, núi, rừng, sông, thành phố sáng đèn, mây trôi), tự vẽ hoàn toàn bằng code, không dùng hình của game khác.
+- Bế quan trong kiếp phải chậm: đột phá không được dễ. Hiện tại bậc 1 mất khoảng 20 năm nếu chỉ ngồi nhà, khoảng 9 năm ở linh mạch lớn **(con số tạm)**.
+- **Sự kiện văn bản:** đoạn văn ngắn với 2-3 lựa chọn. Lựa chọn có phép thử hiện sẵn tỉ lệ thành công, tính theo chỉ số. Trên bản đồ luôn có tối đa 3 sự kiện (dấu chấm than vàng), mỗi sự kiện tồn tại 1-3 năm rồi biến mất.
+
 **Đề xuất (học từ game tham khảo):**
 
-- Chấm địa danh cố định và chấm sự kiện xuất hiện rồi biến mất sau một thời gian.
 - Màu viền báo mức nguy hiểm so với sức mình.
 - Mỗi địa điểm có việc thường nhật giới hạn số lần (săn dị thú, thăm dò).
-- Sự kiện dạng đoạn văn ngắn với 2-3 lựa chọn, kết quả theo chỉ số và khí vận.
 
 ## 10b. Các hệ thống khác (đề xuất)
 
