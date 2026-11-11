@@ -7,7 +7,7 @@ Tài liệu này dành cho người viết thêm sự kiện cho game. Không c�
 - **Thể loại:** tu tiên pha hiện đại. Linh khí quay trở lại giữa thời đại có tàu điện, điện thoại và nhà cao tầng.
 - **Ba con đường:** tu tiên (hấp thụ linh khí, pháp thuật), dị năng (thức tỉnh năng lực riêng nhờ dị hạch), thể tu (rèn thân thể).
 - **Nhân vật:** người chơi sống từng kiếp. Mỗi kiếp bắt đầu là một đứa trẻ phàm nhân 12 tuổi ở Lạc Thành, tu luyện, đi khắp nơi tìm kỳ ngộ, rồi hết thọ và luân hồi.
-- **Thế giới:** năm vùng đất.
+- **Thế giới:** nhiều vùng đất, mỗi nơi có mức nguy hiểm riêng.
 
 | Vùng đất | Cảnh sắc | Địa danh tiêu biểu |
 | --- | --- | --- |
@@ -16,6 +16,8 @@ Tài liệu này dành cho người viết thêm sự kiện cho game. Không c�
 | Tây Mạc | Sa mạc, ốc đảo, tháp cổ | Ốc đảo Phan Rang, Tháp cổ Pô Na Ga, Bí cảnh Cát Vàng |
 | Quần đảo Đông Hải | Đảo, làng chài, núi lửa đã tắt | Bến Cát Bà, Làng chài Lý Sơn, Ngục Côn Lôn |
 | Nam Hoang | Rừng rậm, đầm lầy, núi lửa | Làng U Minh, Hỏa sơn Chư Đăng Ya, Hang Sơn Đoòng |
+| Đông Sơn Châu | Cao nguyên, núi đá, cố đô | Cố đô Hoa Lư, Kiếm các Tam Đảo, Bí cảnh Tràng An |
+| Xích Diệm Châu | Đất núi lửa, sông dung nham | Lò rèn Bát Tràng, Núi Bà Đen, Hỏa ngục Chư Prông |
 
 - **Từ ngữ:** dùng "pháp thuật", không dùng "phép". Tiền tệ là "linh thạch". Quái vật gọi là "dị thú".
 
@@ -111,8 +113,9 @@ Một sự kiện ghi nhiều loại thì có thể xuất hiện ở bất kỳ
 ## 6. Chọn con số cho cân bằng
 
 - **Độ khó:** nhân vật mới có mọi chỉ số bằng 5. Độ khó 5 là 50% thành công; mỗi điểm chênh lệch là 8%. Độ khó 6-7 là vừa, 8 trở lên là liều.
-- **Năng lượng (`energy`):** cả bậc Luyện Khí cần khoảng 300, và ngồi bế quan ở nhà chỉ được 3-4 mỗi năm. Kỳ ngộ thường cho 40-120; phần thưởng lớn, rủi ro cao cho 150-220.
-- **Linh thạch:** mỗi kiếp bắt đầu với khoảng 30. Thưởng thường 10-70.
+- **Năng lượng (`energy`):** cả bậc Luyện Khí cần khoảng 300, và ngồi bế quan ở nhà chỉ được khoảng 4 mỗi năm. Kỳ ngộ thường cho 40-120; phần thưởng lớn, rủi ro cao cho 150-220.
+- **Mỗi kiếp sinh ra ở một nơi ngẫu nhiên**, nên sự kiện không nên giả định người chơi đang ở Lạc Thành, trừ khi `places` chỉ có loại địa danh riêng của Lạc Thành.
+- **Linh thạch:** mỗi kiếp bắt đầu với khoảng 30, làm thuê được 12 mỗi năm, đột phá lên Trúc Cơ cần 100. Thưởng thường 10-70.
 - **Chỉ số:** mỗi lần chỉ cộng 1.
 - **Thời gian mất (`days`):** vết thương nhẹ 5-15 ngày, nặng 20-60 ngày.
 - Lựa chọn an toàn nên cho ít hoặc không cho gì. Lựa chọn liều thì thưởng lớn, thất bại phải trả giá.

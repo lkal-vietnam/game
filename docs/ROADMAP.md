@@ -26,6 +26,11 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 - [x] Thế giới rộng gấp 10: năm vùng đất, 36 địa danh, bến thuyền và đường biển, chế độ toàn cảnh
 - [x] Kiếp bắt đầu là Phàm Nhân, xuất thân ngẫu nhiên, đột phá có thể thất bại
 - [x] Sự kiện tách ra file riêng kèm hướng dẫn viết
+- [x] Thêm Đông Sơn Châu, Xích Diệm Châu và hai đảo lẻ (51 địa danh)
+- [x] Phóng to thu nhỏ bằng hai ngón tay và con lăn chuột
+- [x] Mức nguy hiểm từng nơi, nơi sinh ngẫu nhiên
+- [x] Đột phá tốn linh thạch, làm thuê kiếm linh thạch, càng lên cao càng khó
+- [x] Nhân vật nam và nữ mặc định (hình tạm)
 - [x] Di chuyển theo đường nối, lịch trôi theo số ngày đi
 - [x] Bế quan theo tháng, linh khí khác nhau từng nơi
 - [x] Tuổi thọ, kết thúc kiếp, nhận điểm luân hồi
@@ -33,7 +38,6 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 - [x] Bản đồ vẽ kiểu bản đồ thế giới, có chuyển động
 - [x] Cảm ngộ nối kiếp với bản thể
 - [ ] Nhận thêm sự kiện từ người viết, sự kiện nối tiếp nhau
-- [ ] Vùng đất khó hơn cần đủ cảnh giới mới tới được
 - [ ] Việc thường nhật ở từng địa điểm
 - [ ] Màu viền báo mức nguy hiểm
 
@@ -47,7 +51,7 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 ## M4 — Điểm luân hồi, linh thạch, giải đố
 
 - [ ] Cửa hàng điểm luân hồi ở thế giới chính
-- [ ] Xuất thân và lợi thế đầu kiếp
+- [ ] Xuất thân và lợi thế đầu kiếp, chọn nơi sinh
 - [ ] Phường thị mua bán bằng linh thạch
 - [ ] Bí cảnh Phong Nha với câu đố đầu tiên
 

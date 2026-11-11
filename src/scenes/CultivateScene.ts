@@ -34,6 +34,12 @@ export class CultivateScene extends Phaser.Scene {
     super('Cultivate');
   }
 
+  preload(): void {
+    // Hình nhân vật vẽ bằng vector, nạp ở cỡ lớn để lên màn hình nào cũng nét.
+    this.load.svg('char-nam', 'assets/characters/nam.svg', { width: 600, height: 840 });
+    this.load.svg('char-nu', 'assets/characters/nu.svg', { width: 600, height: 840 });
+  }
+
   create(): void {
     this.save = loadSave();
     if (!this.save.character) {
@@ -62,8 +68,12 @@ export class CultivateScene extends Phaser.Scene {
 
     const orbY = 640;
     const halo = this.add.circle(cx, orbY, 190, def.color, 0.16);
-    const orb = this.add.circle(cx, orbY, 130, def.color, 0.92);
+    this.add.circle(cx, orbY, 130, def.color, 0.3);
+    const orb = this.add.image(cx, orbY - 10, `char-${this.c.gender}`);
+    orb.setScale(360 / orb.height);
+    const baseScale = orb.scale;
     orb.setInteractive({ useHandCursor: true });
+    this.tweens.add({ targets: orb, y: orbY - 20, duration: 1500, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     this.tweens.add({
       targets: halo,
       scale: 1.25,
@@ -76,11 +86,11 @@ export class CultivateScene extends Phaser.Scene {
     orb.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       const gain = tapGain(this.c);
       this.c.energy += gain;
-      this.tweens.add({ targets: orb, scale: 1.1, duration: 70, yoyo: true });
+      this.tweens.add({ targets: orb, scale: baseScale * 1.06, duration: 70, yoyo: true });
       this.floatText(pointer.x, pointer.y, `+${gain.toFixed(1)}`);
       this.refresh();
     });
-    label(this, cx, 870, `Chạm để hấp thụ ${def.energyName.toLowerCase()}`, 24, '#8a94a8');
+    label(this, cx, 880, `Chạm vào nhân vật để hấp thụ ${def.energyName.toLowerCase()}`, 22, '#8a94a8');
 
     this.advanceButton = button(this, cx, 975, 460, 84, '', def.color, () => this.tryAdvance());
     button(this, cx, 1105, 460, 70, this.save.life ? 'Tiếp tục lịch luyện' : 'Lịch luyện kiếp mới', 0xffd36b, () => {

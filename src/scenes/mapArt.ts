@@ -30,7 +30,7 @@ interface Point {
 }
 
 /** Tỉ lệ vẽ ảnh nền so với kích thước thật, để tiết kiệm bộ nhớ. */
-const TEXTURE_SCALE = 0.7;
+const TEXTURE_SCALE = 0.6;
 /** Phần rìa quanh vùng đất dành cho bờ cát và nước nông. */
 const PAD = 1.13;
 export const SEA_COLOR = 0x0c2a3d;
@@ -41,6 +41,8 @@ const PALETTE: Record<Biome, { shallow: string; sand: string; land: string; patc
   desert: { shallow: '#17607a', sand: '#ecd9a6', land: '#d6b676', patchA: '#e2c789', patchB: '#c4a163' },
   jungle: { shallow: '#125a5e', sand: '#bfae7a', land: '#234f30', patchA: '#2c5f38', patchB: '#1a4026' },
   island: { shallow: '#1a6f86', sand: '#efe1b0', land: '#3f6b45', patchA: '#4d7c52', patchB: '#355c3b' },
+  highland: { shallow: '#16566e', sand: '#c9c08f', land: '#4a6b3e', patchA: '#5d7d49', patchB: '#3d5a36' },
+  volcanic: { shallow: '#3b3f52', sand: '#6b5a52', land: '#3a302c', patchA: '#4a3b34', patchB: '#2a2220' },
 };
 
 function seededRandom(seed: number): Random {
@@ -354,6 +356,93 @@ function decorateIsland(ctx: Ctx, land: Land, random: Random): void {
   }
 }
 
+function decorateHighland(ctx: Ctx, land: Land, random: Random): void {
+  const course = [
+    { x: 7650, y: 1900 },
+    { x: 7500, y: 2400 },
+    { x: 7300, y: 2750 },
+    { x: 6900, y: 2950 },
+    { x: 6500, y: 3050 },
+    { x: 6150, y: 3020 },
+  ];
+  curve(ctx, course, 26, '#1d4b61');
+  curve(ctx, course, 15, '#2e86ab');
+  const lake = placeById('nuiCoc');
+  ellipse(ctx, lake.x, lake.y, 260, 170, '#1d4b61');
+  ellipse(ctx, lake.x, lake.y, 235, 148, '#2e86ab');
+  // Ruộng bậc thang quanh làng.
+  const village = placeById('mocChau');
+  for (let i = 0; i < 7; i += 1) {
+    ellipse(ctx, village.x, village.y + 30, 360 - i * 44, 220 - i * 28, i % 2 === 0 ? '#8fb85a' : '#6f9a48', 0.9);
+  }
+  const city = placeById('hoaLu');
+  ellipse(ctx, city.x, city.y, 420, 300, '#8d8468', 0.85);
+  for (const spot of scatter(random, land, city.x, city.y, 190, 130, 60, 55)) {
+    hut(ctx, spot.x, spot.y, '#b9a27a', '#7a2f2a');
+  }
+  for (const spot of scatter(random, land, village.x, village.y, 150, 100, 14, 55)) {
+    hut(ctx, spot.x, spot.y, '#6b4f33', '#a8884f');
+  }
+  for (const spot of everywhere(random, land, 260, 75)) {
+    if (Math.hypot((spot.x - city.x) / 220, (spot.y - city.y) / 160) < 1) continue;
+    mountain(ctx, spot.x, spot.y, 30 + random() * 46, '#6f7f63', '#4f5e47', '#e9f1ee');
+  }
+  for (const spot of everywhere(random, land, 80, 70)) {
+    karst(ctx, spot.x, spot.y, 26 + random() * 30, '#7b8a7a', '#596757', '#3c6b45');
+  }
+  const greens = ['#2c5d33', '#376b3b', '#244f2c', '#41794a'];
+  for (const spot of everywhere(random, land, 900, 55)) {
+    if (Math.hypot((spot.x - city.x) / 220, (spot.y - city.y) / 160) < 1) continue;
+    tree(ctx, spot.x, spot.y, 9 + random() * 7, greens, random);
+  }
+}
+
+function decorateVolcanic(ctx: Ctx, land: Land, random: Random): void {
+  // Sông dung nham.
+  const flows = [
+    [
+      { x: 7500, y: 6500 },
+      { x: 7250, y: 6620 },
+      { x: 6950, y: 6600 },
+      { x: 6600, y: 6650 },
+      { x: 6250, y: 6820 },
+      { x: 5950, y: 6900 },
+    ],
+    [
+      { x: 7500, y: 6500 },
+      { x: 7600, y: 6250 },
+      { x: 7450, y: 6000 },
+      { x: 7200, y: 5850 },
+    ],
+  ];
+  for (const flow of flows) {
+    curve(ctx, flow, 34, '#5a1f12');
+    curve(ctx, flow, 20, '#e2531f');
+    curve(ctx, flow, 7, '#ffc24a', 0.9);
+  }
+  const pit = placeById('chuProng');
+  ellipse(ctx, pit.x, pit.y, 360, 240, '#5a1f12');
+  ellipse(ctx, pit.x, pit.y, 320, 205, '#e2531f');
+  ellipse(ctx, pit.x - 20, pit.y - 10, 180, 100, '#ffc24a', 0.8);
+  for (const spot of everywhere(random, land, 200, 0)) {
+    ellipse(ctx, spot.x, spot.y, 30 + random() * 50, 12 + random() * 16, '#15100e', 0.6);
+  }
+  for (const spot of everywhere(random, land, 210, 75)) {
+    mountain(ctx, spot.x, spot.y, 30 + random() * 46, '#4a3b36', '#2c2220', random() < 0.4 ? '#ff7a3c' : '#6a5a55');
+  }
+  for (const spot of everywhere(random, land, 90, 60)) {
+    rect(ctx, spot.x - 1.5, spot.y - 22, 3, 22, '#1a1412');
+    rect(ctx, spot.x - 8, spot.y - 16, 8, 2.5, '#1a1412');
+    rect(ctx, spot.x, spot.y - 20, 9, 2.5, '#1a1412');
+  }
+  for (const id of ['cuLao', 'batTrang']) {
+    const place = placeById(id);
+    for (const spot of scatter(random, land, place.x, place.y, 140, 90, 16, 55)) {
+      hut(ctx, spot.x, spot.y, '#5a4a44', '#8a3a2a');
+    }
+  }
+}
+
 function drawLand(scene: Phaser.Scene, land: Land, random: Random, lights: Point[]): void {
   const left = land.cx - land.rx * PAD;
   const top = land.cy - land.ry * PAD;
@@ -379,6 +468,8 @@ function drawLand(scene: Phaser.Scene, land: Land, random: Random, lights: Point
   else if (land.biome === 'ice') decorateIce(ctx, land, random);
   else if (land.biome === 'desert') decorateDesert(ctx, land, random);
   else if (land.biome === 'jungle') decorateJungle(ctx, land, random);
+  else if (land.biome === 'highland') decorateHighland(ctx, land, random);
+  else if (land.biome === 'volcanic') decorateVolcanic(ctx, land, random);
   else decorateIsland(ctx, land, random);
 
   const key = `land-${land.id}`;
@@ -419,7 +510,7 @@ function drawRoads(scene: Phaser.Scene): void {
 
 function drawWaves(scene: Phaser.Scene, random: Random): void {
   let placed = 0;
-  for (let attempt = 0; attempt < 3000 && placed < 260; attempt += 1) {
+  for (let attempt = 0; attempt < 5000 && placed < 380; attempt += 1) {
     const x = -200 + random() * (MAP_WIDTH + 400);
     const y = -200 + random() * (MAP_HEIGHT + 400);
     if (isLand(x, y, 1.1)) continue;
@@ -438,7 +529,7 @@ function drawWaves(scene: Phaser.Scene, random: Random): void {
 }
 
 function drawClouds(scene: Phaser.Scene, random: Random): void {
-  for (let i = 0; i < 26; i += 1) {
+  for (let i = 0; i < 36; i += 1) {
     const y = 120 + random() * (MAP_HEIGHT - 240);
     const parts: Phaser.GameObjects.Ellipse[] = [];
     for (let j = 0; j < 4; j += 1) {
@@ -488,7 +579,9 @@ function drawNames(scene: Phaser.Scene): void {
     [1700, 2200, 'BIỂN BẮC', 0],
     [1650, 4700, 'BIỂN TÂY', 0],
     [4000, 3300, 'BIỂN ĐÔNG HẢI', 90],
-    [4200, 5100, 'BIỂN NAM', 0],
+    [4300, 5100, 'BIỂN NAM', 0],
+    [5750, 3400, 'VỊNH ĐÔNG SƠN', 90],
+    [5200, 6500, 'BIỂN LỬA', 0],
   ];
   for (const [x, y, text, angle] of names) {
     label(scene, x, y, text, 26, '#f1e6c8').setAlpha(0.45).setAngle(angle).setDepth(3);
@@ -518,7 +611,7 @@ export function drawTerrain(scene: Phaser.Scene): Phaser.GameObjects.Text[] {
       .setVisible(false);
   });
   titles.push(
-    label(scene, 4800, 1700, 'QUẦN ĐẢO ĐÔNG HẢI', 150, '#bfe8f7').setStroke('#0b0f1a', 22).setDepth(30).setVisible(false),
+    label(scene, 4800, 1750, 'QUẦN ĐẢO ĐÔNG HẢI', 150, '#bfe8f7').setStroke('#0b0f1a', 22).setDepth(30).setVisible(false),
   );
   return titles;
 }

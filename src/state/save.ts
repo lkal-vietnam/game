@@ -6,6 +6,8 @@ import type { DiNang, LinhCan } from '../data/talents';
 export interface Character {
   /** Nhánh chính, chọn một lần và giữ mãi. */
   path: PathId;
+  /** Hình nhân vật: nam hoặc nữ. */
+  gender: 'nam' | 'nu';
   linhCan: LinhCan;
   /** Dị năng bản mệnh, chỉ có khi nhánh chính là dị năng. */
   banMenh: DiNang | null;
@@ -37,6 +39,8 @@ export interface Life {
   /** Mã địa danh đang đứng. */
   location: string;
   linhThach: number;
+  /** Đã bỏ mạng (bị tập kích ở tử địa), khác với hết thọ. */
+  killed: boolean;
   /** Các sự kiện đang hiện trên bản đồ. */
   events: ActiveEvent[];
 }
@@ -74,9 +78,11 @@ export function loadSave(): SaveData {
       // Bản lưu cũ chưa có các trường về kiếp: bù giá trị mặc định.
       if (parsed.version === 2) {
         const save = { ...emptySave(), ...parsed };
+        if (save.character) save.character.gender ??= 'nam';
         if (save.life) {
           save.life.events ??= [];
           save.life.origin ??= 'thuongDan';
+          save.life.killed ??= false;
         }
         return save;
       }

@@ -1,4 +1,4 @@
-import { START_PLACE } from '../data/map';
+import { dangerLevel, PLACES, START_PLACE, type Place, type PlaceType } from '../data/map';
 import { BASE_STATS, type PathId, type Stats } from '../data/paths';
 import { rollBanMenhDiNang, rollLinhCan } from '../data/talents';
 import type { Life } from '../state/save';
@@ -16,6 +16,16 @@ const LIFESPAN_BY_TIER = [80, 100, 200, 500, 1000, 2000];
  */
 const MONTHLY_BASE = 0.32;
 const START_LINH_THACH = 30;
+/**
+ * Hệ số tốc độ bế quan theo bậc. Các số này được chọn để ở bậc nào cũng vậy:
+ * chỉ ngồi nhà (linh khí ×1) thì tích đủ tu vi cho bậc kế tiếp mất khoảng 85-90%
+ * quãng thọ nguyên còn lại. Muốn kịp phải tìm nơi linh khí đậm và kỳ ngộ.
+ */
+const RATE_BY_TIER = [1, 1, 2.75, 3.6, 7.9, 7.9];
+/** Tỉ lệ đột phá gốc theo bậc hiện tại: Phàm Nhân, Luyện Khí, Trúc Cơ, Kim Đan, Nguyên Anh. */
+const BREAKTHROUGH_BASE = [0.7, 0.4, 0.3, 0.22, 0.15];
+/** Linh thạch cần cho mỗi lần đột phá, theo bậc hiện tại. */
+const BREAKTHROUGH_COST = [0, 100, 400, 1500, 5000];
 
 export interface Origin {
   id: string;
@@ -70,6 +80,23 @@ function rollOrigin(rng: () => number): Origin {
   return ORIGINS[0];
 }
 
+const BIRTH_TYPES: PlaceType[] = ['home', 'village', 'market', 'port'];
+
+/**
+ * Nơi sinh ngẫu nhiên trên khắp thế giới. Nơi càng nguy hiểm càng hiếm gặp,
+ * nhưng vẫn có thể rơi vào. Sau này đủ điểm luân hồi sẽ được tự chọn.
+ */
+function rollBirthplace(rng: () => number): string {
+  const options = PLACES.filter((place) => BIRTH_TYPES.includes(place.type) && place.danger <= 3);
+  const weights = options.map((place) => 1 / Math.pow(1 + place.danger, 2));
+  let roll = rng() * weights.reduce((sum, weight) => sum + weight, 0);
+  for (let i = 0; i < options.length; i += 1) {
+    roll -= weights[i];
+    if (roll < 0) return options[i].id;
+  }
+  return START_PLACE;
+}
+
 /** Mỗi kiếp đều bắt đầu là Phàm Nhân 12 tuổi. */
 export function createLife(path: PathId, index: number, rng: () => number = Math.random): Life {
   const origin = rollOrigin(rng);
@@ -84,8 +111,9 @@ export function createLife(path: PathId, index: number, rng: () => number = Math
     energy: 0,
     stats: { ...BASE_STATS },
     days: 0,
-    location: START_PLACE,
+    location: rollBirthplace(rng),
     linhThach: START_LINH_THACH + (origin.linhThach ?? 0),
+    killed: false,
     events: [],
   };
   for (const key of Object.keys(origin.stats ?? {}) as (keyof Stats)[]) {
@@ -104,7 +132,7 @@ export function ageYears(life: Life): number {
 }
 
 export function isDead(life: Life): boolean {
-  return ageYears(life) >= lifespan(life);
+  return life.killed || ageYears(life) >= lifespan(life);
 }
 
 export function dateLabel(life: Life): string {
@@ -115,7 +143,7 @@ export function dateLabel(life: Life): string {
 }
 
 export function monthlyGain(life: Life, linhKhi: number): number {
-  return MONTHLY_BASE * Math.max(life.tier, 1) * talentMultiplier(life) * linhKhi;
+  return MONTHLY_BASE * (RATE_BY_TIER[life.tier] ?? 1) * talentMultiplier(life) * linhKhi;
 }
 
 /** Bế quan một số tháng tại nơi có hệ số linh khí cho trước. Trả về năng lượng nhận được. */
@@ -129,8 +157,53 @@ export function seclude(life: Life, months: number, linhKhi: number): number {
 /** Tỉ lệ đột phá bậc lớn thành công. Lên giai đoạn nhỏ thì luôn thành công. */
 export function breakthroughChance(life: Life): number {
   if (!isBreakthrough(life)) return 1;
-  const base = life.tier === 0 ? 0.7 : life.tier === 1 ? 0.4 : 0.3;
+  const base = BREAKTHROUGH_BASE[life.tier] ?? 0.1;
   return Math.min(0.95, Math.max(0.05, base + (life.stats.ngoTinh - 5) * 0.03));
+}
+
+/** Linh thạch phải bỏ ra cho một lần đột phá bậc lớn (mua đan dược, bày trận hộ pháp). */
+export function breakthroughCost(life: Life): number {
+  return isBreakthrough(life) ? (BREAKTHROUGH_COST[life.tier] ?? 0) : 0;
+}
+
+export function canAttempt(life: Life): boolean {
+  return canAdvance(life) && life.linhThach >= breakthroughCost(life);
+}
+
+const WORK_TYPES: PlaceType[] = ['home', 'market', 'port', 'village', 'station', 'guild', 'dojo'];
+const WORK_PAY = 12;
+
+export function canWorkAt(place: Place): boolean {
+  return WORK_TYPES.includes(place.type);
+}
+
+/** Làm thuê một năm lấy linh thạch. Trả về số linh thạch nhận được. */
+export function work(life: Life): number {
+  life.linhThach += WORK_PAY;
+  life.days += DAYS_PER_YEAR;
+  return WORK_PAY;
+}
+
+export interface Hazard {
+  injuryDays: number;
+  killed: boolean;
+}
+
+/** Tới một nơi nguy hiểm hơn sức mình thì có thể bị tập kích: bị thương, hoặc bỏ mạng ở tử địa. */
+export function arrivalHazard(life: Life, place: Place, rng: () => number = Math.random): Hazard | null {
+  const level = dangerLevel(place, life.tier);
+  if (level < 2) return null;
+  const roll = rng();
+  if (level === 3 && roll < 0.12) {
+    life.killed = true;
+    return { injuryDays: 0, killed: true };
+  }
+  if (roll < (level === 3 ? 0.47 : 0.25)) {
+    const injuryDays = level === 3 ? 90 : 30;
+    life.days += injuryDays;
+    return { injuryDays, killed: false };
+  }
+  return null;
 }
 
 /**
@@ -141,7 +214,9 @@ export function attemptAdvance(
   life: Life,
   rng: () => number = Math.random,
 ): { success: boolean; gained: Partial<Stats> } | null {
-  if (!canAdvance(life)) return null;
+  if (!canAttempt(life)) return null;
+  // Linh thạch tiêu ngay khi thử, thành hay bại cũng mất.
+  life.linhThach -= breakthroughCost(life);
   if (rng() >= breakthroughChance(life)) {
     life.energy -= Math.round(energyRequired(life) * 0.3);
     life.days += DAYS_PER_YEAR;

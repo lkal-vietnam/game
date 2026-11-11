@@ -28,10 +28,12 @@ export function refreshEvents(life: Life, rng: () => number = Math.random): void
 }
 
 /** Xác suất thành công của một lựa chọn có phép thử, từ 10% đến 95%. */
-export function successChance(life: Life, choice: Choice): number {
+export function successChance(life: Life, choice: Choice, dangerLevel = 0): number {
   if (!choice.check) return 1;
   const diff = life.stats[choice.check.stat] - choice.check.difficulty;
-  return Math.min(0.95, Math.max(0.1, 0.5 + diff * 0.08));
+  // Ở nơi nguy hiểm hơn sức mình, mọi việc đều khó thành hơn.
+  const penalty = Math.max(0, dangerLevel - 1) * 0.1;
+  return Math.min(0.95, Math.max(0.05, 0.5 + diff * 0.08 - penalty));
 }
 
 export function canChoose(life: Life, choice: Choice): boolean {
@@ -42,9 +44,10 @@ export function canChoose(life: Life, choice: Choice): boolean {
 export function resolveChoice(
   life: Life,
   choice: Choice,
+  dangerLevel = 0,
   rng: () => number = Math.random,
 ): { outcome: Outcome; success: boolean } {
-  const success = !choice.fail || rng() < successChance(life, choice);
+  const success = !choice.fail || rng() < successChance(life, choice, dangerLevel);
   const outcome = success ? choice.ok : choice.fail!;
   life.energy += outcome.energy ?? 0;
   life.linhThach = Math.max(0, life.linhThach + (outcome.linhThach ?? 0));

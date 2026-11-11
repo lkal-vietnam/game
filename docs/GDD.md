@@ -40,6 +40,9 @@ Game có hai tầng chạy song song:
 - Đột phá thì thọ nguyên tăng và mở bản đồ cao hơn. Phần khám phá bản đồ chủ yếu nằm ở tầng này.
 - Tu luyện trong kiếp phải khó: chỉ ngồi nhà bế quan thì tới 80-90 tuổi mới đủ tu vi để thử lên Trúc Cơ, xui thì hết thọ vẫn chưa lên được. Muốn nhanh phải đi tìm linh mạch, kỳ ngộ, công pháp, linh thạch.
 - Đột phá bậc lớn có thể thất bại.
+- **Càng lên cao càng khó:** ở bậc nào cũng vậy, chỉ ngồi nhà thì tích đủ tu vi cho bậc kế tiếp mất khoảng 85-90% thọ nguyên còn lại; tỉ lệ đột phá giảm dần; mỗi lần đột phá tốn linh thạch, thành hay bại đều mất.
+- **Nơi sinh ngẫu nhiên:** mỗi kiếp sinh ra ở một nơi ngẫu nhiên trên thế giới (nhà, làng, chợ, bến), nơi càng nguy hiểm càng hiếm gặp. Khi đủ điểm luân hồi mới được chọn nơi sinh.
+- **Mức nguy hiểm:** mọi châu đều đi được, nhưng mỗi nơi có mức nguy hiểm so với bậc của mình (an toàn, ngang sức, nguy hiểm, tử địa). Tới nơi nguy hiểm có thể bị tập kích phải dưỡng thương; tới tử địa có thể bỏ mạng. Sự kiện ở nơi nguy hiểm cũng khó thành hơn.
 - Hết thọ hoặc chết trong bí cảnh thì kiếp kết thúc, hồn về bản thể và nhận điểm luân hồi.
 - Bản thể ở giới nào thì các kiếp bắt đầu ở giới đó (bản thể lên Linh giới thì kiếp ở Linh giới).
 
@@ -134,7 +137,9 @@ Tỉ lệ quay là con số tạm, sẽ chỉnh khi chơi thử.
 - Điểm luân hồi dùng để mua đồ ở thế giới chính và các hỗ trợ đầu kiếp: xuất thân, pháp bảo khởi đầu, linh thạch ban đầu, tăng xác suất ra linh căn hoặc thiên phú cao.
 - **Linh thạch** là tiền tệ trong game.
 - Thọ nguyên theo bậc của kiếp **(con số tạm)**: Phàm Nhân 80, Luyện Khí 100, Trúc Cơ 200, Kim Đan 500, Nguyên Anh 1.000, Hóa Thần 2.000 năm.
-- Tỉ lệ đột phá bậc lớn **(con số tạm)**: Phàm Nhân lên Luyện Khí 70%, Luyện Khí lên Trúc Cơ 40%, các bậc sau 30%; mỗi điểm Ngộ tính trên 5 cộng 3%. Thất bại mất 30% tu vi và một năm dưỡng thương.
+- Tỉ lệ đột phá bậc lớn **(con số tạm)**: Phàm Nhân lên Luyện Khí 70%, lên Trúc Cơ 40%, lên Kim Đan 30%, lên Nguyên Anh 22%, lên Hóa Thần 15%; mỗi điểm Ngộ tính trên 5 cộng 3%. Thất bại mất 30% tu vi và một năm dưỡng thương.
+- Linh thạch cho mỗi lần đột phá **(con số tạm)**: lên Trúc Cơ 100, Kim Đan 400, Nguyên Anh 1.500, Hóa Thần 5.000.
+- Kiếm linh thạch: sự kiện, hoặc làm thuê ở nơi có người ở (12 linh thạch mỗi năm). Sau này thêm săn dị thú.
 - Xuất thân hiện quay ngẫu nhiên **(tạm, sau này mua bằng điểm luân hồi)**: con nhà thường dân, con cháu thế gia (tu vi Phàm Nhân đầy sẵn, thêm linh thạch), trẻ mồ côi đường phố (Thân pháp và Thể chất +1, không linh thạch), con nhà thư hương (Ngộ tính +2).
 - Công thức điểm hiện tại **(tạm)**: 10 điểm mỗi giai đoạn đã vượt, cộng 1 điểm mỗi 10 năm đã sống.
 
@@ -144,7 +149,8 @@ Tỉ lệ quay là con số tạm, sẽ chỉnh khi chơi thử.
 
 - Bản đồ rộng, các chấm là địa điểm cần đến. Di chuyển chỉ làm lịch trong game trôi, không phải chờ thời gian thật.
 - Thành phố hư cấu **Lạc Thành**, địa danh mượn tên đẹp ở Việt Nam.
-- Thế giới rộng, nhiều châu lục. Hiện có năm vùng đất với 36 địa danh, nối bằng đường bộ và đường biển qua các bến thuyền. Nút "Toàn cảnh" thu nhỏ để thấy cả thế giới; chạm vào đâu thì bay tới đó.
+- Thế giới rộng, nhiều châu lục. Hiện có bảy vùng đất và hai đảo lẻ với 51 địa danh, nối bằng đường bộ và đường biển qua các bến thuyền.
+- Phóng to thu nhỏ bằng hai ngón tay hoặc con lăn chuột. Nút "Toàn cảnh" thu nhỏ để thấy cả thế giới; khi nhìn xa, chạm vào đâu thì bay tới đó.
 
 | Vùng đất | Cảnh sắc | Địa danh |
 | --- | --- | --- |
@@ -153,6 +159,9 @@ Tỉ lệ quay là con số tạm, sẽ chỉnh khi chơi thử.
 | Tây Mạc | Sa mạc | Bến Mũi Né, Ốc đảo Phan Rang, Tháp cổ Pô Na Ga, Sào huyệt Sa Trùng, Bí cảnh Cát Vàng |
 | Quần đảo Đông Hải | Bốn đảo | Bến Cát Bà, Động Thiên Cung, Làng chài Lý Sơn, Miệng núi Thới Lới, Cảng An Thới, Rừng Hàm Ninh, Ngục Côn Lôn |
 | Nam Hoang | Rừng rậm, núi lửa | Bến Rạch Giá, Làng U Minh, Rừng tràm U Minh Hạ, Hỏa sơn Chư Đăng Ya, Hang Sơn Đoòng |
+| Đông Sơn Châu | Cao nguyên, núi đá, cố đô | Bến Vân Đồn, Cố đô Hoa Lư, Làng Mộc Châu, Kiếm các Tam Đảo, Hồ Núi Cốc, Cổ tự Bái Đính, Bí cảnh Tràng An, Bến Sầm Sơn |
+| Xích Diệm Châu | Đất núi lửa, sông dung nham | Bến Hòn Khói, Làng Cù Lao, Lò rèn Bát Tràng, Núi Bà Đen, Hỏa ngục Chư Prông |
+| Đảo lẻ | | Hải đăng Bạch Long Vĩ, Thủy trại Hòn Tre |
 
 Linh khí từng nơi ghi trong `src/data/map.ts`: trong thành ×0,8-1,5; các linh mạch lớn ở châu khác tới ×3.
 
@@ -178,6 +187,7 @@ Linh khí từng nơi ghi trong `src/data/map.ts`: trong thành ×0,8-1,5; các 
 
 - Khung hình dọc 720×1280, tự co theo màn hình.
 - Giai đoạn đầu dùng hình vẽ bằng code và hiệu ứng; thay dần bằng asset.
+- Hai nhân vật mặc định nam và nữ (`public/assets/characters/`) là hình vector 2D kiểu chibi do mình tự vẽ, dùng tạm. Mục tiêu về sau: hình kiểu hoạt hình tu tiên, 3D nếu được, do họa sĩ hoặc công cụ tạo hình làm.
 - Âm thanh: chưa bàn.
 
 ## 13. Câu hỏi còn mở
