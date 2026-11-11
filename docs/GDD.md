@@ -76,12 +76,7 @@ Mỗi bậc chia ba giai đoạn: sơ kỳ, trung kỳ, hậu kỳ. Cùng số b
 | | 11 | Kim Tiên | Pháp Tướng | Chân Thần |
 | | 12 | Thái Ất | Bất Diệt Thể | Thần Vương |
 | | 13 | Đại La | Hỗn Độn Thể | Thần Hoàng |
-| | 14 | Đạo Tổ | *chờ chọn* | *chờ chọn* |
-
-Tên bậc 14 của thể tu và dị năng đang chờ chọn lại. Gợi ý:
-
-- Thể tu: Bàn Cổ Chân Thân, Khai Thiên, Vạn Cổ Bất Diệt.
-- Dị năng: Sáng Thế, Khởi Nguyên, Vĩnh Hằng.
+| | 14 | Đạo Tổ | Bàn Cổ Chân Thân | Vĩnh Hằng |
 
 ## 7. Linh căn (đã chốt)
 
@@ -118,16 +113,19 @@ Tỉ lệ quay là con số tạm, sẽ chỉnh khi chơi thử.
 
 ## 9. Luân hồi
 
-**Đã chốt:** nhân vật có tuổi thọ giới hạn. Hết tuổi thọ hoặc chết trong bí cảnh thì luân hồi, quay lại linh căn.
+**Đã chốt:**
+
+- Nhân vật có tuổi thọ giới hạn. Hết tuổi thọ hoặc chết trong bí cảnh thì luân hồi.
+- Kiếp sau bắt đầu lại từ đầu và quay lại linh căn. Không mang theo vật phẩm, dị năng hay cảnh giới.
+- Thứ duy nhất mang sang là **điểm luân hồi**, được cộng theo lịch luyện của kiếp trước.
+- Điểm luân hồi dùng để mua các hỗ trợ đầu kiếp, ví dụ: xuất thân, pháp bảo khởi đầu, số linh thạch ban đầu, tăng xác suất ra linh căn hoặc thiên phú cao.
+- **Linh thạch** là tiền tệ trong game.
 
 **Đề xuất:**
 
-- Mỗi bậc cảnh giới kéo dài tuổi thọ (ví dụ Luyện Khí 100 năm, Trúc Cơ 200, Kim Đan 500, Nguyên Anh 1.000, Hóa Thần 2.000). Tuổi tăng theo thời gian tu luyện và mỗi chuyến khám phá.
-- Khi luân hồi: chọn lại nhánh chính, quay lại linh căn, cảnh giới về đầu.
-- Kiếp trước để lại **đạo quả**: phần thưởng vĩnh viễn tính theo cảnh giới cao nhất đã đạt, ví dụ cộng Ngộ tính, Khí vận, hoặc tăng tỉ lệ ra linh căn tốt. Nhờ vậy mỗi kiếp mạnh hơn kiếp trước.
-- Thua trận thường chỉ bị thương (mất năng lượng, nghỉ một lúc); chỉ bí cảnh và kiếp nạn mới có thể chết.
-
-Câu hỏi còn mở: kiếp sau giữ lại được gì (vật phẩm, dị năng, ký ức công pháp)?
+- Mỗi bậc cảnh giới kéo dài tuổi thọ (ví dụ Luyện Khí 100 năm, Trúc Cơ 200, Kim Đan 500, Nguyên Anh 1.000, Hóa Thần 2.000).
+- Điểm luân hồi tính theo cảnh giới cao nhất, số bí cảnh đã vượt, số dị thú đã hạ.
+- Thua trận thường chỉ bị thương; chỉ bí cảnh và kiếp nạn mới có thể chết.
 
 ## 10. Các hệ thống khác (đề xuất)
 
@@ -149,8 +147,6 @@ Câu hỏi còn mở: kiếp sau giữ lại được gì (vật phẩm, dị n�
 ## 13. Câu hỏi còn mở
 
 1. Tên game?
-2. Tên bậc 14 của thể tu và dị năng?
-3. Luân hồi giữ lại gì cho kiếp sau?
-4. Có cốt truyện và nhân vật chính cụ thể không?
-5. Loại câu đố ưa thích?
-6. Khi chơi chung: hợp tác, giao dịch hay tỉ thí?
+2. Có cốt truyện và nhân vật chính cụ thể không?
+3. Loại câu đố ưa thích?
+4. Khi chơi chung: hợp tác, giao dịch hay tỉ thí?
