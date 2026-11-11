@@ -23,6 +23,8 @@ export interface Character {
 export interface Life {
   /** Kiếp thứ mấy, bắt đầu từ 1. */
   index: number;
+  /** Mã xuất thân của kiếp này. */
+  origin: string;
   path: PathId;
   linhCan: LinhCan;
   banMenh: DiNang | null;
@@ -72,7 +74,10 @@ export function loadSave(): SaveData {
       // Bản lưu cũ chưa có các trường về kiếp: bù giá trị mặc định.
       if (parsed.version === 2) {
         const save = { ...emptySave(), ...parsed };
-        if (save.life) save.life.events ??= [];
+        if (save.life) {
+          save.life.events ??= [];
+          save.life.origin ??= 'thuongDan';
+        }
         return save;
       }
     }

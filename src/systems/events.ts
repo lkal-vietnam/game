@@ -48,7 +48,7 @@ export function resolveChoice(
   const outcome = success ? choice.ok : choice.fail!;
   life.energy += outcome.energy ?? 0;
   life.linhThach = Math.max(0, life.linhThach + (outcome.linhThach ?? 0));
-  if (outcome.stat) life.stats[outcome.stat[0]] += outcome.stat[1];
+  if (outcome.stat) life.stats[outcome.stat.name] += outcome.stat.amount;
   life.days += outcome.days ?? 0;
   return { outcome, success };
 }

@@ -71,6 +71,8 @@ export function button(
 /** Ghim đối tượng lên giao diện: không trôi theo camera, nằm trên bản đồ. */
 export function pin<T extends Pinnable>(items: T[], depth = 100): T[] {
   items.forEach((item) => {
+    // Camera chính (bản đồ) bỏ qua giao diện, để phóng to thu nhỏ bản đồ không ảnh hưởng tới nút bấm.
+    item.scene.cameras.main.ignore(item);
     item.setScrollFactor(0);
     item.setDepth(depth);
   });

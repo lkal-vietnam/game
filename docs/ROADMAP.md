@@ -23,13 +23,17 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 
 - [x] Hai tầng chơi: bản thể (thời gian thật) và lịch luyện kiếp (lịch trong game)
 - [x] Bản đồ Lạc Thành với 10 địa danh, kéo để xem
+- [x] Thế giới rộng gấp 10: năm vùng đất, 36 địa danh, bến thuyền và đường biển, chế độ toàn cảnh
+- [x] Kiếp bắt đầu là Phàm Nhân, xuất thân ngẫu nhiên, đột phá có thể thất bại
+- [x] Sự kiện tách ra file riêng kèm hướng dẫn viết
 - [x] Di chuyển theo đường nối, lịch trôi theo số ngày đi
 - [x] Bế quan theo tháng, linh khí khác nhau từng nơi
 - [x] Tuổi thọ, kết thúc kiếp, nhận điểm luân hồi
 - [x] Sự kiện dạng văn bản có lựa chọn (11 sự kiện đầu tiên)
 - [x] Bản đồ vẽ kiểu bản đồ thế giới, có chuyển động
 - [x] Cảm ngộ nối kiếp với bản thể
-- [ ] Viết thêm sự kiện, sự kiện nối tiếp nhau
+- [ ] Nhận thêm sự kiện từ người viết, sự kiện nối tiếp nhau
+- [ ] Vùng đất khó hơn cần đủ cảnh giới mới tới được
 - [ ] Việc thường nhật ở từng địa điểm
 - [ ] Màu viền báo mức nguy hiểm
 

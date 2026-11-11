@@ -4,24 +4,29 @@ import { eventById, type Choice, type GameEvent, type Outcome } from '../data/ev
 import { findRoute, MAP_HEIGHT, MAP_WIDTH, PLACES, PLACE_TYPES, placeById, type Place } from '../data/map';
 import { PATHS, STAT_LABELS, type Stats } from '../data/paths';
 import { loadSave, writeSave, type Life, type SaveData } from '../state/save';
-import { advance, canAdvance, energyRequired, isAtPeak, isBreakthrough, realmName } from '../systems/cultivation';
+import { canAdvance, energyRequired, isAtPeak, isBreakthrough, realmName } from '../systems/cultivation';
 import {
   ageYears,
+  attemptAdvance,
+  breakthroughChance,
   createLife,
   dateLabel,
   isDead,
   lifespan,
   luanHoiPoints,
   monthlyGain,
+  originById,
   seclude,
 } from '../systems/life';
 import { canChoose, refreshEvents, resolveChoice, successChance } from '../systems/events';
 import { button, formatNumber, hexColor, label, pin } from '../ui/widgets';
-import { drawTerrain } from './mapArt';
+import { drawTerrain, SEA_COLOR } from './mapArt';
 
 const HUD_HEIGHT = 190;
 const PANEL_TOP = 950;
 const SEA_MARGIN = 160;
+/** Mức thu nhỏ để thấy cả thế giới trong khoảng giữa thanh trạng thái và bảng địa danh. */
+const OVERVIEW_ZOOM = 0.115;
 const BAR_WIDTH = 420;
 
 type Destroyable = { destroy(): void };
@@ -41,6 +46,10 @@ export class MapScene extends Phaser.Scene {
   private panel: Destroyable[] = [];
   private rings = new Map<string, Phaser.GameObjects.Arc>();
   private badges: Destroyable[] = [];
+  private uiCamera!: Phaser.Cameras.Scene2D.Camera;
+  private overview = false;
+  private landTitles: Phaser.GameObjects.Text[] = [];
+  private bigMarker!: Phaser.GameObjects.Arc;
 
   constructor() {
     super('Map');
@@ -68,7 +77,12 @@ export class MapScene extends Phaser.Scene {
     refreshEvents(this.life);
     writeSave(this.save);
 
+    this.overview = false;
+    this.cameras.main.setBackgroundColor(SEA_COLOR);
     this.drawMap();
+    // Camera thứ hai chỉ vẽ giao diện; mọi thứ thuộc bản đồ đã tạo ở trên thì nó bỏ qua.
+    this.uiCamera = this.cameras.add(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    this.hideFromUi(this.children.list);
     this.drawHud();
     this.setupCamera();
     this.refreshHud();
@@ -80,7 +94,7 @@ export class MapScene extends Phaser.Scene {
   // ---------- Bản đồ ----------
 
   private drawMap(): void {
-    drawTerrain(this);
+    this.landTitles = drawTerrain(this);
 
     PLACES.forEach((place) => this.drawPlace(place));
 
@@ -90,6 +104,9 @@ export class MapScene extends Phaser.Scene {
     this.marker = this.add.container(here.x, here.y - 62, [pulse, dot]).setDepth(20);
     this.tweens.add({ targets: pulse, scale: 2.4, alpha: 0, duration: 1100, repeat: -1 });
     this.tweens.add({ targets: this.marker, y: '-=8', duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    // Dấu vị trí cỡ lớn, chỉ hiện ở chế độ toàn cảnh.
+    this.bigMarker = this.add.circle(here.x, here.y, 110, 0xffd36b, 0.9).setStrokeStyle(24, 0xffffff, 1).setDepth(31).setVisible(false);
+    this.tweens.add({ targets: this.bigMarker, scale: 1.5, duration: 700, yoyo: true, repeat: -1 });
   }
 
   private drawPlace(place: Place): void {
@@ -127,7 +144,7 @@ export class MapScene extends Phaser.Scene {
 
     body.on('pointerup', (pointer: Phaser.Input.Pointer) => {
       // Kéo bản đồ rồi nhả tay trên một chấm thì không tính là chọn.
-      if (this.busy || pointer.getDistance() > 14) return;
+      if (this.busy || this.overview || pointer.getDistance() > 14) return;
       this.selected = place.id;
       this.renderPanel();
     });
@@ -151,23 +168,61 @@ export class MapScene extends Phaser.Scene {
     }
   }
 
-  private setupCamera(): void {
-    const camera = this.cameras.main;
-    camera.setBounds(
+  private hideFromUi(items: Phaser.GameObjects.GameObject[]): void {
+    for (const item of items) {
+      this.uiCamera.ignore(item);
+      if (item instanceof Phaser.GameObjects.Container) this.hideFromUi(item.list);
+    }
+  }
+
+  private applyBounds(): void {
+    this.cameras.main.setBounds(
       -SEA_MARGIN,
       -SEA_MARGIN - HUD_HEIGHT,
       MAP_WIDTH + SEA_MARGIN * 2,
       MAP_HEIGHT + SEA_MARGIN * 2 + HUD_HEIGHT + (GAME_HEIGHT - PANEL_TOP),
     );
+  }
+
+  private setupCamera(): void {
+    const camera = this.cameras.main;
+    this.applyBounds();
     const here = placeById(this.life.location);
     camera.centerOn(here.x, here.y);
 
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
       if (!pointer.isDown || this.busy) return;
       if (pointer.downY < HUD_HEIGHT || pointer.downY > PANEL_TOP) return;
-      camera.scrollX -= pointer.x - pointer.prevPosition.x;
-      camera.scrollY -= pointer.y - pointer.prevPosition.y;
+      camera.scrollX -= (pointer.x - pointer.prevPosition.x) / camera.zoom;
+      camera.scrollY -= (pointer.y - pointer.prevPosition.y) / camera.zoom;
     });
+
+    // Ở chế độ toàn cảnh, chạm vào đâu thì bay tới vùng đó.
+    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      if (!this.overview || this.busy || pointer.getDistance() > 14) return;
+      if (pointer.y < HUD_HEIGHT || pointer.y > PANEL_TOP) return;
+      const point = camera.getWorldPoint(pointer.x, pointer.y);
+      this.setOverview(false, point.x, point.y);
+    });
+  }
+
+  private setOverview(on: boolean, x = this.marker.x, y = this.marker.y): void {
+    const camera = this.cameras.main;
+    this.overview = on;
+    this.landTitles.forEach((title) => title.setVisible(on));
+    this.bigMarker.setPosition(this.marker.x, this.marker.y + 62).setVisible(on);
+    if (on) {
+      camera.removeBounds();
+      camera.setZoom(OVERVIEW_ZOOM);
+      // Dịch tâm để thế giới nằm giữa khoảng trống giữa thanh trạng thái và bảng địa danh.
+      const bandCenter = (HUD_HEIGHT + PANEL_TOP) / 2;
+      camera.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2 + (GAME_HEIGHT / 2 - bandCenter) / OVERVIEW_ZOOM);
+      this.toast('Chạm vào bản đồ để tới vùng đó');
+    } else {
+      camera.setZoom(1);
+      this.applyBounds();
+      camera.centerOn(x, y);
+    }
   }
 
   // ---------- Thanh trạng thái ----------
@@ -190,6 +245,11 @@ export class MapScene extends Phaser.Scene {
       this.scene.start('Cultivate');
     }, 24);
     pin(back.objects, 101);
+    const world = button(this, GAME_WIDTH - 100, 122, 170, 56, 'Toàn cảnh', 0xffd36b, () => {
+      if (this.busy) return;
+      this.setOverview(!this.overview);
+    }, 24);
+    pin(world.objects, 101);
   }
 
   private refreshHud(): void {
@@ -245,9 +305,9 @@ export class MapScene extends Phaser.Scene {
 
     const perMonth = monthlyGain(this.life, place.linhKhi);
     const options: [string, number][] = [
-      ['1 tháng', 1],
       ['1 năm', 12],
       ['5 năm', 60],
+      ['10 năm', 120],
     ];
     options.forEach(([text, months], index) => {
       const item = button(
@@ -263,13 +323,13 @@ export class MapScene extends Phaser.Scene {
       );
       this.panel.push(item, ...pin(item.objects, 101));
     });
-    const rate = label(this, cx, PANEL_TOP + 236, `+${perMonth.toFixed(1)} mỗi tháng tại đây`, 20, '#8a94a8');
+    const rate = label(this, cx, PANEL_TOP + 236, `+${(perMonth * 12).toFixed(1)} mỗi năm tại đây`, 20, '#8a94a8');
     this.panel.push(...pin([rate]));
 
     const caption = isAtPeak(this.life)
       ? 'Đỉnh Nhân giới'
       : isBreakthrough(this.life)
-        ? 'Đột phá'
+        ? `Đột phá · ${Math.round(breakthroughChance(this.life) * 100)}%`
         : 'Lên giai đoạn';
     const hasEvent = event !== undefined;
     const up = button(
@@ -295,6 +355,7 @@ export class MapScene extends Phaser.Scene {
 
   private travel(stops: string[], days: number): void {
     if (this.busy) return;
+    if (this.overview) this.setOverview(false);
     this.busy = true;
     const points = stops.slice(1).map((id) => placeById(id));
     const camera = this.cameras.main;
@@ -316,7 +377,8 @@ export class MapScene extends Phaser.Scene {
         targets: this.marker,
         x: target.x,
         y: target.y - 62,
-        duration: 650,
+        // Chặng xa thì chạy lâu hơn một chút, nhưng không bắt người chơi chờ quá 2 giây.
+        duration: 650 + Math.min(Math.hypot(target.x - this.marker.x, target.y - this.marker.y), 2700) * 0.5,
         ease: 'Sine.easeInOut',
         onComplete: () => step(index + 1),
       });
@@ -334,19 +396,32 @@ export class MapScene extends Phaser.Scene {
   private doAdvance(): void {
     if (this.busy) return;
     const major = isBreakthrough(this.life);
-    const gained = advance(this.life);
-    if (!gained) return;
+    const tierBefore = this.life.tier;
+    const result = attemptAdvance(this.life);
+    if (!result) return;
+    if (!result.success) {
+      this.cameras.main.shake(400, 0.015);
+      this.cameras.main.flash(300, 255, 90, 90);
+      this.afterTimePassed('Đột phá thất bại: mất 30% tu vi, dưỡng thương một năm');
+      return;
+    }
     if (major) {
       this.cameras.main.flash(600, 255, 255, 255);
       this.cameras.main.shake(350, 0.012);
     } else {
       this.cameras.main.flash(250, 180, 220, 255);
     }
-    const summary = (Object.keys(gained) as (keyof Stats)[])
-      .map((key) => `${STAT_LABELS[key]} +${gained[key]}`)
+    const summary = (Object.keys(result.gained) as (keyof Stats)[])
+      .map((key) => `${STAT_LABELS[key]} +${result.gained[key]}`)
       .join('   ');
-    if (major) this.save.camNgo += 1;
-    this.afterTimePassed(major ? `Đột phá! Thọ nguyên ${lifespan(this.life)} năm  ·  +1 cảm ngộ` : summary);
+    if (!major) {
+      this.afterTimePassed(summary);
+      return;
+    }
+    // Từ Phàm Nhân bước vào bậc 1 chưa đủ để bản thể lĩnh ngộ; từ bậc 1 trở lên mới tính.
+    const insight = tierBefore >= 1;
+    if (insight) this.save.camNgo += 1;
+    this.afterTimePassed(`Đột phá! Thọ nguyên ${lifespan(this.life)} năm${insight ? '  ·  +1 cảm ngộ' : ''}`);
   }
 
   private afterTimePassed(message: string): void {
@@ -381,6 +456,7 @@ export class MapScene extends Phaser.Scene {
       const place = placeById(active.placeId);
       const dot = this.add.circle(place.x + 30, place.y - 30, 17, 0xffd36b, 1).setStrokeStyle(3, 0x0b0f1a, 1).setDepth(8);
       const mark = label(this, place.x + 30, place.y - 30, '!', 26, '#0b0f1a').setDepth(9);
+      this.hideFromUi([dot, mark]);
       this.tweens.add({ targets: [dot, mark], scale: 1.25, duration: 500, yoyo: true, repeat: -1 });
       this.badges.push(dot, mark);
     }
@@ -452,7 +528,7 @@ export class MapScene extends Phaser.Scene {
     const parts: string[] = [];
     if (outcome.energy) parts.push(`${PATHS[this.life.path].energyName} +${outcome.energy}`);
     if (outcome.linhThach) parts.push(`Linh thạch ${outcome.linhThach > 0 ? '+' : ''}${outcome.linhThach}`);
-    if (outcome.stat) parts.push(`${STAT_LABELS[outcome.stat[0]]} +${outcome.stat[1]}`);
+    if (outcome.stat) parts.push(`${STAT_LABELS[outcome.stat.name]} +${outcome.stat.amount}`);
     if (outcome.days) parts.push(`${outcome.days} ngày`);
     return parts.length > 0 ? parts.join('   ·   ') : 'Không có gì thay đổi';
   }
@@ -485,7 +561,9 @@ export class MapScene extends Phaser.Scene {
     const life = this.life;
     const lines: [string, number, string][] = [
       [`Kiếp thứ ${life.index}`, 56, '#e8f0ff'],
-      ['Hồn nhập vào một đứa trẻ 12 tuổi ở Lạc Thành.', 26, '#8a94a8'],
+      ['Hồn nhập vào một đứa trẻ phàm nhân 12 tuổi ở Lạc Thành.', 26, '#8a94a8'],
+      [originById(life.origin).name, 36, '#ffd36b'],
+      [originById(life.origin).description, 24, '#c9d4e8'],
       [life.linhCan.name, 48, '#7fd4ff'],
       [`Hệ: ${life.linhCan.elements.join(', ')}`, 28, '#c9d4e8'],
     ];

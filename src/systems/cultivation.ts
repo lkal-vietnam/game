@@ -14,6 +14,8 @@ export interface Cultivator {
 
 /** Bản hiện tại chỉ có Nhân giới: bậc 1 đến 5. */
 export const MAX_TIER = 5;
+/** Bậc 0 là Phàm Nhân: chỉ các kiếp lịch luyện mới bắt đầu từ đây. */
+const MORTAL_COST = 20;
 const BASE_COST = 60;
 const COST_GROWTH = 1.55;
 const BASE_RATE = 1;
@@ -40,6 +42,7 @@ export function createCharacter(
 }
 
 export function realmName(c: Cultivator): string {
+  if (c.tier === 0) return 'Phàm Nhân';
   return `${PATHS[c.path].tiers[c.tier - 1]} · ${STAGE_NAMES[c.stage]}`;
 }
 
@@ -49,10 +52,11 @@ export function isAtPeak(c: Cultivator): boolean {
 
 /** Lần lên tiếp theo là đột phá bậc lớn (hậu kỳ lên bậc mới). */
 export function isBreakthrough(c: Cultivator): boolean {
-  return c.stage === STAGE_NAMES.length - 1;
+  return c.tier === 0 || c.stage === STAGE_NAMES.length - 1;
 }
 
 export function energyRequired(c: Cultivator): number {
+  if (c.tier === 0) return Math.round(MORTAL_COST * PATHS[c.path].costMultiplier);
   const index = (c.tier - 1) * STAGE_NAMES.length + c.stage;
   return Math.round(BASE_COST * Math.pow(COST_GROWTH, index) * PATHS[c.path].costMultiplier);
 }
@@ -66,7 +70,7 @@ export function talentMultiplier(c: Cultivator): number {
 
 /** Năng lượng bản thể hấp thụ mỗi giây thật. */
 export function energyRate(c: Cultivator): number {
-  return BASE_RATE * c.tier * talentMultiplier(c);
+  return BASE_RATE * Math.max(c.tier, 1) * talentMultiplier(c);
 }
 
 export function tapGain(c: Cultivator): number {
