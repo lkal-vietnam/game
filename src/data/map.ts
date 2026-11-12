@@ -120,7 +120,7 @@ function home(place: Place): Place {
 }
 
 export const PLACES: Place[] = [
-  // ----- Lạc Việt Châu: Lạc Thành và vùng ven -----
+  // ----- Lạc Việt Quốc -----
   home({ id: 'hangMay', name: 'Ngõ Hàng Mây', type: 'home', x: 850, y: 1050, linhKhi: 1, danger: 0, description: 'Căn nhà nhỏ trong ngõ. Yên tĩnh và an toàn.' }),
   home({ id: 'dongXuan', name: 'Chợ đêm Đồng Xuân', type: 'market', x: 620, y: 900, linhKhi: 0.8, danger: 0, description: 'Chợ ngầm của giới tu luyện, mua bán bằng linh thạch.' }),
   home({ id: 'longBien', name: 'Ga Long Biên', type: 'station', x: 1090, y: 900, linhKhi: 0.8, danger: 0, description: 'Ga tàu điện lớn nhất Lạc Thành.' }),
@@ -189,7 +189,7 @@ export const PLACES: Place[] = [
   { id: 'trangAn', name: 'Bí cảnh Tràng An', type: 'secret', x: 3300, y: 3100, linhKhi: 3.5, danger: 4, description: 'Hang nối hang, nước nối nước. Lối vào đổi chỗ mỗi mùa.' },
   { id: 'samSon', name: 'Bến Sầm Sơn', type: 'port', x: 3350, y: 3330, linhKhi: 1, danger: 2, description: 'Bến thuyền phía nam Đông Sơn Châu.' },
 
-  // ----- Xích Diệm Châu -----
+  // ----- Xích Diệm Đảo -----
   { id: 'honKhoi', name: 'Bến Hòn Khói', type: 'port', x: 5700, y: 4540, linhKhi: 1.2, danger: 3, description: 'Bến thuyền dưới trời tro bụi.' },
   { id: 'cuLao', name: 'Làng Cù Lao', type: 'village', x: 5200, y: 5050, linhKhi: 1.5, danger: 3, description: 'Dân làng sống nhờ suối nước nóng.' },
   { id: 'batTrang', name: 'Lò rèn Bát Tràng', type: 'market', x: 6100, y: 4950, linhKhi: 1.5, danger: 3, description: 'Lò rèn pháp bảo dùng lửa địa tâm.' },

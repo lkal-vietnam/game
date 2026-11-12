@@ -52,6 +52,7 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 - [x] Gặp tu sĩ: kết giao, cướp đoạt, kẻ thù phục kích
 - [ ] Cân lại độ khó sau khi chơi thử
 - [ ] NPC đầy đủ như người chơi: cảnh giới, hành trình, bái sư, giao dịch, đạo lữ
+- [ ] Nhận bộ NPC do người thiết kế viết theo docs/THIET-KE-NPC.md và đưa vào game
 - [ ] Danh sách nhân mạch (đạo hữu, kẻ thù)
 - [ ] Trang bị, pháp bảo, đan dược
 
