@@ -3,9 +3,8 @@ import { GAME_WIDTH } from '../config';
 import { PATHS, PATH_ORDER, type PathId } from '../data/paths';
 import { emptySave, writeSave, type Character } from '../state/save';
 import { createCharacter } from '../systems/cultivation';
+import { characterKey, fit, SKIN_COUNT, type Gender } from '../ui/art';
 import { button, hexColor, label } from '../ui/widgets';
-
-type Gender = 'nam' | 'nu';
 
 /** Tạo bản thể: chọn nhân vật, chọn nhánh chính, rồi xem kết quả quay linh căn. */
 export class CreateScene extends Phaser.Scene {
@@ -14,42 +13,44 @@ export class CreateScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.chooseGender();
+    this.chooseLook();
   }
 
-  private chooseGender(): void {
+  private chooseLook(): void {
     const cx = GAME_WIDTH / 2;
-    label(this, cx, 130, 'Chọn nhân vật', 60);
-    label(this, cx, 200, 'Đây là bản thể của bạn, giữ mãi qua mọi kiếp', 26, '#8a94a8');
+    label(this, cx, 90, 'Chọn nhân vật', 56);
+    label(this, cx, 152, 'Đây là bản thể của bạn, giữ mãi qua mọi kiếp', 24, '#8a94a8');
 
-    const options: [Gender, string, number, number][] = [
-      ['nam', 'Nam', cx - 170, 0x7fd4ff],
-      ['nu', 'Nữ', cx + 170, 0xff9bb5],
+    const rows: [Gender, string, number, number][] = [
+      ['nam', 'Nam', 440, 0x7fd4ff],
+      ['nu', 'Nữ', 940, 0xff9bb5],
     ];
-    for (const [gender, name, x, color] of options) {
-      const card = this.add
-        .rectangle(x, 620, 300, 560, 0x162033, 1)
-        .setStrokeStyle(3, color, 0.9)
-        .setInteractive({ useHandCursor: true });
-      const portrait = this.add.image(x, 590, `char-${gender}`);
-      portrait.setScale(420 / portrait.height);
-      this.tweens.add({ targets: portrait, y: 580, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-      label(this, x, 860, name, 40, hexColor(color));
-      card.on('pointerdown', () => {
-        this.children.removeAll(true);
-        this.choosePath(gender);
-      });
+    for (const [gender, name, y, color] of rows) {
+      label(this, cx, y - 232, name, 32, hexColor(color));
+      for (let skin = 1; skin <= SKIN_COUNT; skin += 1) {
+        const x = 96 + (skin - 1) * 176;
+        const card = this.add
+          .rectangle(x, y, 164, 400, 0x162033, 1)
+          .setStrokeStyle(3, color, 0.8)
+          .setInteractive({ useHandCursor: true });
+        const portrait = this.add.image(x, y, characterKey(gender, skin));
+        fit(portrait, 152, 384);
+        card.on('pointerdown', () => {
+          this.children.removeAll(true);
+          this.choosePath(gender, skin);
+        });
+      }
     }
   }
 
-  private choosePath(gender: Gender): void {
+  private choosePath(gender: Gender, skin: number): void {
     const cx = GAME_WIDTH / 2;
     label(this, cx, 110, 'Chọn con đường', 60);
     label(this, cx, 180, 'Nhánh chính chọn một lần và giữ mãi', 26, '#8a94a8');
-    PATH_ORDER.forEach((id, index) => this.pathCard(id, gender, 380 + index * 300));
+    PATH_ORDER.forEach((id, index) => this.pathCard(id, gender, skin, 380 + index * 300));
   }
 
-  private pathCard(id: PathId, gender: Gender, y: number): void {
+  private pathCard(id: PathId, gender: Gender, skin: number, y: number): void {
     const def = PATHS[id];
     const cx = GAME_WIDTH / 2;
     const card = this.add
@@ -61,7 +62,7 @@ export class CreateScene extends Phaser.Scene {
     label(this, cx, y + 85, `Đặc tính: ${def.trait}`, 22, '#8a94a8');
     card.on('pointerdown', () => {
       // Lưu ngay để không thể tải lại trang mà quay linh căn lần nữa.
-      const character = createCharacter(id, gender, Date.now());
+      const character = createCharacter(id, gender, skin, Date.now());
       writeSave({ ...emptySave(), character });
       this.children.removeAll(true);
       this.showResult(character);
@@ -73,9 +74,9 @@ export class CreateScene extends Phaser.Scene {
     const def = PATHS[c.path];
     this.cameras.main.flash(400, 255, 255, 255);
 
-    const portrait = this.add.image(cx, 250, `char-${c.gender}`);
-    portrait.setScale(300 / portrait.height);
-    label(this, cx, 440, def.name, 56, hexColor(def.color));
+    const portrait = this.add.image(cx, 235, characterKey(c.gender, c.skin));
+    fit(portrait, 300, 380);
+    label(this, cx, 465, def.name, 52, hexColor(def.color));
     label(this, cx, 540, 'Linh căn của bản thể', 28, '#8a94a8');
     const title = label(this, cx, 610, c.linhCan.name, 52);
     label(this, cx, 680, `Hệ: ${c.linhCan.elements.join(', ')}`, 30, '#7fd4ff');

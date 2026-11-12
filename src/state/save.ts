@@ -8,6 +8,8 @@ export interface Character {
   path: PathId;
   /** Hình nhân vật: nam hoặc nữ. */
   gender: 'nam' | 'nu';
+  /** Kiểu hình đã chọn, từ 1. */
+  skin: number;
   linhCan: LinhCan;
   /** Dị năng bản mệnh, chỉ có khi nhánh chính là dị năng. */
   banMenh: DiNang | null;
@@ -94,7 +96,10 @@ export function loadSave(): SaveData {
       // Bản lưu cũ chưa có các trường về kiếp: bù giá trị mặc định.
       if (parsed.version === 2) {
         const save = { ...emptySave(), ...parsed };
-        if (save.character) save.character.gender ??= 'nam';
+        if (save.character) {
+          save.character.gender ??= 'nam';
+          save.character.skin ??= 1;
+        }
         if (save.life) {
           save.life.events ??= [];
           save.life.origin ??= 'thuongDan';

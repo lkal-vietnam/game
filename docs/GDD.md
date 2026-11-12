@@ -208,7 +208,9 @@ Linh khí từng nơi ghi trong `src/data/map.ts`: trong thành ×0,8-1,5; các 
 
 - Khung hình dọc 720×1280, tự co theo màn hình.
 - Giai đoạn đầu dùng hình vẽ bằng code và hiệu ứng; thay dần bằng asset.
-- Hai nhân vật mặc định nam và nữ (`public/assets/characters/`) hiện là hình vector 2D kiểu chibi, dùng tạm. Hình chính thức sẽ do công cụ tạo ảnh AI vẽ theo mô tả trong [NHAN-VAT.md](NHAN-VAT.md): kiểu hoạt hình tu tiên Trung Quốc, dựng 3D.
+- Nhân vật: 4 kiểu nam và 4 kiểu nữ (`public/assets/characters/`), chọn khi tạo bản thể. Tu sĩ NPC trong trận đấu cũng dùng các hình này.
+- Dị thú: 30 hình (`public/assets/monsters/`), chia theo bậc: 10 linh thú nhỏ cho bậc thấp, 20 hung thú lớn cho bậc cao. Bảng tên và hình nằm trong `src/systems/battle.ts`.
+- Nguồn hình ghi ở `public/assets/CREDITS.md`.
 - Âm thanh: chưa bàn.
 
 ## 13. Câu hỏi còn mở

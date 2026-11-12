@@ -32,7 +32,9 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 - [x] Đột phá tốn linh thạch, làm thuê kiếm linh thạch, càng lên cao càng khó
 - [x] Nhân vật nam và nữ mặc định (hình tạm)
 - [x] Thiên Nam Đại Lục: năm quốc gia liền nhau, 12 thành thị, quan ải, cảng ra đảo (64 địa danh)
-- [ ] Thay hình nhân vật bằng ảnh do công cụ AI vẽ (mô tả ở docs/NHAN-VAT.md)
+- [x] Thay hình nhân vật bằng ảnh do công cụ AI vẽ: 4 kiểu nam, 4 kiểu nữ
+- [x] Hình cho 30 loại dị thú trong trận đấu
+- [ ] Dùng các hình nền, bản đồ vẽ tay, biểu tượng ngũ hành còn lại trong gói asset
 - [x] Di chuyển theo đường nối, lịch trôi theo số ngày đi
 - [x] Bế quan theo tháng, linh khí khác nhau từng nơi
 - [x] Tuổi thọ, kết thúc kiếp, nhận điểm luân hồi

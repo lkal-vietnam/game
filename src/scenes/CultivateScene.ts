@@ -13,6 +13,7 @@ import {
   realmName,
   tapGain,
 } from '../systems/cultivation';
+import { characterKey, fit, preloadCharacters } from '../ui/art';
 import { button, formatNumber, label, type Button } from '../ui/widgets';
 
 const BAR_WIDTH = 560;
@@ -35,9 +36,7 @@ export class CultivateScene extends Phaser.Scene {
   }
 
   preload(): void {
-    // Hình nhân vật vẽ bằng vector, nạp ở cỡ lớn để lên màn hình nào cũng nét.
-    this.load.svg('char-nam', 'assets/characters/nam.svg', { width: 600, height: 840 });
-    this.load.svg('char-nu', 'assets/characters/nu.svg', { width: 600, height: 840 });
+    preloadCharacters(this);
   }
 
   create(): void {
@@ -66,12 +65,11 @@ export class CultivateScene extends Phaser.Scene {
     this.energyText = label(this, cx, 370, '', 28, '#c9d4e8');
     this.rateText = label(this, cx, 410, '', 22, '#8a94a8');
 
-    const orbY = 640;
+    const orbY = 650;
     const halo = this.add.circle(cx, orbY, 190, def.color, 0.16);
     this.add.circle(cx, orbY, 130, def.color, 0.3);
-    const orb = this.add.image(cx, orbY - 10, `char-${this.c.gender}`);
-    orb.setScale(360 / orb.height);
-    const baseScale = orb.scale;
+    const orb = this.add.image(cx, orbY - 10, characterKey(this.c.gender, this.c.skin));
+    const baseScale = fit(orb, 300, 430);
     orb.setInteractive({ useHandCursor: true });
     this.tweens.add({ targets: orb, y: orbY - 20, duration: 1500, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     this.tweens.add({

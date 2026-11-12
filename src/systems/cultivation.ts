@@ -27,12 +27,14 @@ const OFFLINE_CAP_SECONDS = 8 * 3600;
 export function createCharacter(
   path: PathId,
   gender: 'nam' | 'nu',
+  skin: number,
   now: number,
   rng: () => number = Math.random,
 ): Character {
   return {
     path,
     gender,
+    skin,
     linhCan: rollLinhCan(rng),
     banMenh: path === 'diNang' ? rollBanMenhDiNang(rng) : null,
     tier: 1,

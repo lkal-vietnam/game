@@ -13,6 +13,7 @@ import {
   type Enemy,
 } from '../systems/battle';
 import { realmName } from '../systems/cultivation';
+import { characterKey, fit, monsterPath } from '../ui/art';
 import { button, label, type Button } from '../ui/widgets';
 
 export interface BattleSetup {
@@ -25,7 +26,7 @@ export interface BattleSetup {
 
 interface EnemyView {
   body: Phaser.GameObjects.Arc;
-  icon: Phaser.GameObjects.Text;
+  icon: Phaser.GameObjects.Image;
   bar: Phaser.GameObjects.Rectangle;
   hpText: Phaser.GameObjects.Text;
   x: number;
@@ -60,6 +61,13 @@ export class BattleScene extends Phaser.Scene {
     this.setup = data;
   }
 
+  preload(): void {
+    // Chỉ nạp hình của những dị thú có mặt trong trận này.
+    for (const enemy of this.setup?.enemies ?? []) {
+      if (enemy.file && !this.textures.exists(enemy.image)) this.load.image(enemy.image, monsterPath(enemy.file));
+    }
+  }
+
   create(): void {
     this.save = loadSave();
     if (!this.save.life || !this.setup?.enemies?.length) {
@@ -76,13 +84,13 @@ export class BattleScene extends Phaser.Scene {
 
     const cx = GAME_WIDTH / 2;
     this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x140d14);
-    this.add.rectangle(cx, 380, GAME_WIDTH, 420, 0x24121a, 0.9);
+    this.add.rectangle(cx, 390, GAME_WIDTH, 440, 0x24121a, 0.9);
     label(this, cx, 70, 'Giao chiến', 44, '#ff8a8a');
     label(this, cx, 132, this.setup.intro, 22, '#c9d4e8').setWordWrapWidth(660);
 
     this.drawEnemies();
     for (let i = 0; i < 4; i += 1) {
-      this.logLines.push(label(this, cx, 612 + i * 42, '', 22, '#8a94a8').setWordWrapWidth(680));
+      this.logLines.push(label(this, cx, 630 + i * 38, '', 21, '#8a94a8').setWordWrapWidth(680));
     }
     this.drawPlayer();
     this.drawButtons();
@@ -97,14 +105,15 @@ export class BattleScene extends Phaser.Scene {
     this.battle.enemies.forEach((enemy, index) => {
       const x = startX + index * spacing;
       const body = this.add
-        .circle(x, ENEMY_Y, 58, 0x1a2233, 1)
+        .circle(x, ENEMY_Y, 74, 0x1a2233, 0.6)
         .setStrokeStyle(5, 0xe05d5d, 1)
         .setInteractive({ useHandCursor: true });
-      const icon = label(this, x, ENEMY_Y, enemy.icon, 54);
-      label(this, x, ENEMY_Y + 92, enemy.name, 19, '#e8f0ff').setWordWrapWidth(164);
-      this.add.rectangle(x - ENEMY_BAR / 2, ENEMY_Y + 136, ENEMY_BAR, 12, 0x3a1a1a, 1).setOrigin(0, 0.5);
-      const bar = this.add.rectangle(x - ENEMY_BAR / 2, ENEMY_Y + 136, ENEMY_BAR, 12, 0xe05d5d, 1).setOrigin(0, 0.5);
-      const hpText = label(this, x, ENEMY_Y + 160, '', 18, '#c9d4e8');
+      const icon = this.add.image(x, ENEMY_Y, enemy.image);
+      fit(icon, 160, 170);
+      label(this, x, ENEMY_Y + 104, enemy.name, 19, '#e8f0ff').setWordWrapWidth(164);
+      this.add.rectangle(x - ENEMY_BAR / 2, ENEMY_Y + 150, ENEMY_BAR, 12, 0x3a1a1a, 1).setOrigin(0, 0.5);
+      const bar = this.add.rectangle(x - ENEMY_BAR / 2, ENEMY_Y + 150, ENEMY_BAR, 12, 0xe05d5d, 1).setOrigin(0, 0.5);
+      const hpText = label(this, x, ENEMY_Y + 174, '', 18, '#c9d4e8');
       body.on('pointerdown', () => {
         if (this.busy || enemy.hp === 0) return;
         this.battle.target = index;
@@ -116,9 +125,8 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private drawPlayer(): void {
-    const gender = this.save.character?.gender ?? 'nam';
-    const portrait = this.add.image(130, 905, `char-${gender}`);
-    portrait.setScale(240 / portrait.height);
+    const portrait = this.add.image(130, 905, characterKey(this.save.character?.gender ?? 'nam', this.save.character?.skin ?? 1));
+    fit(portrait, 190, 290);
     label(this, 250, 830, realmName(this.life), 30, '#e8f0ff').setOrigin(0, 0.5);
     this.add.rectangle(250, 880, PLAYER_BAR, 22, 0x1c2740, 1).setOrigin(0, 0.5);
     this.hpBar = this.add.rectangle(250, 880, PLAYER_BAR, 22, 0x7fe08a, 1).setOrigin(0, 0.5);

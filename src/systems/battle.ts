@@ -1,4 +1,5 @@
 import type { Life, Relation } from '../state/save';
+import { characterKey, monsterKey, SKIN_COUNT } from '../ui/art';
 import { DAYS_PER_YEAR } from './life';
 
 /** Luật chiến đấu theo lượt. File này chỉ có phép tính, không dính tới hình ảnh. */
@@ -7,7 +8,10 @@ type Rng = () => number;
 
 export interface Enemy {
   name: string;
-  icon: string;
+  /** Khóa hình đã nạp trong game. */
+  image: string;
+  /** File hình dị thú cần nạp; tu sĩ dùng hình nhân vật có sẵn nên bỏ trống. */
+  file?: string;
   level: number;
   hp: number;
   maxHp: number;
@@ -25,34 +29,51 @@ export interface PlayerCombat {
   defense: number;
 }
 
-const BEASTS: string[][] = [
-  ['Chuột Sắt', 'Chó Hoang Biến Dị', 'Quạ Mắt Đỏ'],
-  ['Sói Lưng Gai', 'Rết Đá', 'Lợn Rừng Giáp Sắt'],
-  ['Hổ Vằn Lôi', 'Mãng Xà Băng', 'Vượn Tay Dài'],
-  ['Sa Trùng', 'Gấu Hỏa Nham', 'Ưng Phong Bạo'],
-  ['Giao Long Non', 'Kỳ Lân Tà Hóa', 'Cự Viên Sơn Thần'],
-  ['Hỏa Phượng Tàn Hồn', 'Long Quy Vạn Năm', 'Ma Thần Viễn Cổ'],
+/** Dị thú theo bậc: tên và file hình trong public/assets/monsters. */
+const BEASTS: [string, string][][] = [
+  [
+    ['Linh Miêu Tam Nhãn', 'pet-03'],
+    ['Hồ Ly Lá Non', 'pet-02'],
+    ['Kim Mao Tiểu Sư', 'pet-07'],
+  ],
+  [
+    ['Hắc Viêm Lang', 'pet-04'],
+    ['Lộc Băng Giác', 'pet-05'],
+    ['Thanh Vũ Hạc', 'pet-06'],
+    ['Sói Ngậm Kiếm', 'pet-08'],
+  ],
+  [
+    ['Tiểu Lôi Kỳ Lân', 'pet-10'],
+    ['Tử Hỏa Linh Hồ', 'pet-09'],
+    ['Xích Dương Điểu', 'pet-01'],
+    ['Kim Nha Hổ', 'boss-10'],
+  ],
+  [
+    ['Hỏa Trư Ma', 'boss-08'],
+    ['Huyết Dực Bạch Hổ', 'boss-09'],
+    ['Lục Độc Cửu Đầu Xà', 'boss-05'],
+    ['Kim Mao Sư Vương', 'boss-18'],
+    ['Thôn Hải Cự Ngư', 'boss-12'],
+  ],
+  [
+    ['Băng Viêm Song Sắc Điểu', 'boss-06'],
+    ['Thanh Phong Long Ưng', 'boss-07'],
+    ['Cửu Vĩ Yêu Hồ', 'boss-17'],
+    ['Dung Nham Cự Nhân', 'boss-14'],
+    ['Thương Hải Long Kình', 'boss-13'],
+    ['Xích Vũ Phượng', 'boss-16'],
+    ['Hư Không Ma Chu', 'boss-11'],
+  ],
+  [
+    ['Kim Long Vạn Kiếm', 'boss-01'],
+    ['Xích Viêm Thần Nữ', 'boss-02'],
+    ['Hỏa Long Thôn Nhật', 'boss-03'],
+    ['Kim Dực Thiên Cơ', 'boss-04'],
+    ['Băng Ngục Cửu Đầu Long', 'boss-15'],
+    ['Lôi Đình Cự Thần', 'boss-19'],
+    ['Hư Không Minh Long', 'boss-20'],
+  ],
 ];
-const BEAST_ICONS: Record<string, string> = {
-  'Chuột Sắt': '🐀',
-  'Chó Hoang Biến Dị': '🐕',
-  'Quạ Mắt Đỏ': '🦅',
-  'Sói Lưng Gai': '🐺',
-  'Rết Đá': '🐛',
-  'Lợn Rừng Giáp Sắt': '🐗',
-  'Hổ Vằn Lôi': '🐅',
-  'Mãng Xà Băng': '🐍',
-  'Vượn Tay Dài': '🦍',
-  'Sa Trùng': '🦂',
-  'Gấu Hỏa Nham': '🐻',
-  'Ưng Phong Bạo': '🦅',
-  'Giao Long Non': '🐉',
-  'Kỳ Lân Tà Hóa': '🦄',
-  'Cự Viên Sơn Thần': '🦍',
-  'Hỏa Phượng Tàn Hồn': '🔥',
-  'Long Quy Vạn Năm': '🐢',
-  'Ma Thần Viễn Cổ': '👹',
-};
 const SURNAMES = ['Lý', 'Trần', 'Phạm', 'Đoàn', 'Mạc', 'Tạ', 'Vương', 'Khúc', 'Dương', 'Hồ'];
 const GIVEN_NAMES = ['Thanh Phong', 'Bất Phàm', 'Vân Khê', 'Hàn Sơn', 'Tử Yên', 'Minh Nguyệt', 'Trường Sinh', 'Lạc Trần', 'Cô Vân', 'Thiết Tâm'];
 const NPC_RANKS = ['phàm nhân luyện võ', 'tu sĩ Luyện Khí', 'tu sĩ Trúc Cơ', 'tu sĩ Kim Đan', 'tu sĩ Nguyên Anh', 'tu sĩ Hóa Thần'];
@@ -69,13 +90,14 @@ function clampLevel(level: number): number {
   return Math.min(5, Math.max(0, Math.round(level)));
 }
 
-function makeEnemy(name: string, icon: string, level: number, human: boolean): Enemy {
+function makeEnemy(name: string, image: string, level: number, human: boolean, file?: string): Enemy {
   // Tu sĩ có đầu óc và pháp bảo nên nhỉnh hơn dị thú cùng bậc.
   const boost = human ? 1.25 : 1;
   const maxHp = Math.round((20 + level * 26) * boost);
   return {
     name,
-    icon,
+    image,
+    file,
     level,
     hp: maxHp,
     maxHp,
@@ -97,10 +119,9 @@ function rollGroupSize(rng: Rng): number {
 export function createBeasts(level: number, rng: Rng = Math.random): Enemy[] {
   const tier = clampLevel(level);
   const count = rollGroupSize(rng);
-  const name = pick(BEASTS[tier], rng);
-  const icon = BEAST_ICONS[name] ?? '🐺';
+  const [name, file] = pick(BEASTS[tier], rng);
   return Array.from({ length: count }, (_, index) =>
-    makeEnemy(count > 1 ? `${name} ${index + 1}` : name, icon, tier, false),
+    makeEnemy(count > 1 ? `${name} ${index + 1}` : name, monsterKey(file), tier, false, file),
   );
 }
 
@@ -112,8 +133,15 @@ export function npcRank(npc: Relation): string {
   return NPC_RANKS[clampLevel(npc.level)];
 }
 
+/** Tu sĩ mượn một trong các hình nhân vật; cùng một tên thì luôn ra cùng một hình. */
+function npcImage(name: string): string {
+  let hash = 0;
+  for (const letter of name) hash = (hash * 31 + letter.charCodeAt(0)) % 1000;
+  return characterKey(hash % 2 === 0 ? 'nam' : 'nu', (hash % SKIN_COUNT) + 1);
+}
+
 export function npcAsEnemy(npc: Relation): Enemy {
-  return makeEnemy(npc.name, '🗡️', npc.level, true);
+  return makeEnemy(npc.name, npcImage(npc.name), npc.level, true);
 }
 
 /** Tu sĩ thù địch đôi khi kéo theo đồng bọn. */
@@ -121,7 +149,7 @@ export function createNpcParty(npc: Relation, rng: Rng = Math.random): Enemy[] {
   const party = [npcAsEnemy(npc)];
   const extra = rollGroupSize(rng) - 1;
   for (let i = 0; i < extra; i += 1) {
-    party.push(makeEnemy(`Đồng bọn ${i + 1}`, '🗡️', Math.max(0, npc.level - 1), true));
+    party.push(makeEnemy(`Đồng bọn ${i + 1}`, npcImage(`${npc.name}${i}`), Math.max(0, npc.level - 1), true));
   }
   return party;
 }
