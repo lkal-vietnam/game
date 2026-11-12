@@ -1,4 +1,4 @@
-import { dangerLevel, PLACES, START_PLACE, type Place, type PlaceType } from '../data/map';
+import { PLACES, START_PLACE, type Place, type PlaceType } from '../data/map';
 import { BASE_STATS, type PathId, type Stats } from '../data/paths';
 import { rollBanMenhDiNang, rollLinhCan } from '../data/talents';
 import type { Life } from '../state/save';
@@ -114,6 +114,9 @@ export function createLife(path: PathId, index: number, rng: () => number = Math
     location: rollBirthplace(rng),
     linhThach: START_LINH_THACH + (origin.linhThach ?? 0),
     killed: false,
+    injured: false,
+    relations: [],
+    hunts: {},
     events: [],
   };
   for (const key of Object.keys(origin.stats ?? {}) as (keyof Stats)[]) {
@@ -182,28 +185,6 @@ export function work(life: Life): number {
   life.linhThach += WORK_PAY;
   life.days += DAYS_PER_YEAR;
   return WORK_PAY;
-}
-
-export interface Hazard {
-  injuryDays: number;
-  killed: boolean;
-}
-
-/** Tới một nơi nguy hiểm hơn sức mình thì có thể bị tập kích: bị thương, hoặc bỏ mạng ở tử địa. */
-export function arrivalHazard(life: Life, place: Place, rng: () => number = Math.random): Hazard | null {
-  const level = dangerLevel(place, life.tier);
-  if (level < 2) return null;
-  const roll = rng();
-  if (level === 3 && roll < 0.12) {
-    life.killed = true;
-    return { injuryDays: 0, killed: true };
-  }
-  if (roll < (level === 3 ? 0.47 : 0.25)) {
-    const injuryDays = level === 3 ? 90 : 30;
-    life.days += injuryDays;
-    return { injuryDays, killed: false };
-  }
-  return null;
 }
 
 /**

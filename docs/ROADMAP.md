@@ -45,11 +45,15 @@ Không đặt hạn chót. Mỗi milestone kết thúc bằng một bản chơi 
 
 ## M3 — Chiến đấu theo lượt
 
-- [ ] Màn hình trận đấu một đấu một
-- [ ] Đánh thường, kỹ năng, phòng thủ
-- [ ] Dị thú ở các vùng dị thú; gặp dị thú và người tu luyện khác trên đường
-- [ ] Cân lại độ khó (tỉ lệ bị tập kích, bỏ mạng) sau khi có chiến đấu
-- [ ] Phần thưởng sau trận: linh thạch, nguyên liệu
+- [x] Màn hình trận đấu, một mình đấu một tới bốn kẻ địch
+- [x] Đánh thường, kỹ năng nhánh, phòng thủ, bỏ chạy
+- [x] Máu, thương nặng, thua lúc đang thương nặng thì chết
+- [x] Săn dị thú, bị tập kích ở nơi nguy hiểm
+- [x] Gặp tu sĩ: kết giao, cướp đoạt, kẻ thù phục kích
+- [ ] Cân lại độ khó sau khi chơi thử
+- [ ] NPC đầy đủ như người chơi: cảnh giới, hành trình, bái sư, giao dịch, đạo lữ
+- [ ] Danh sách nhân mạch (đạo hữu, kẻ thù)
+- [ ] Trang bị, pháp bảo, đan dược
 
 ## M4 — Điểm luân hồi, linh thạch, giải đố
 

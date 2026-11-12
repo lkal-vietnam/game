@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from './config';
+import { BattleScene } from './scenes/BattleScene';
 import { CreateScene } from './scenes/CreateScene';
 import { CultivateScene } from './scenes/CultivateScene';
 import { MapScene } from './scenes/MapScene';
@@ -15,5 +16,5 @@ new Phaser.Game({
     width: GAME_WIDTH,
     height: GAME_HEIGHT,
   },
-  scene: [CultivateScene, CreateScene, MapScene],
+  scene: [CultivateScene, CreateScene, MapScene, BattleScene],
 });

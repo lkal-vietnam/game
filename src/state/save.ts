@@ -39,10 +39,26 @@ export interface Life {
   /** Mã địa danh đang đứng. */
   location: string;
   linhThach: number;
-  /** Đã bỏ mạng (bị tập kích ở tử địa), khác với hết thọ. */
+  /** Đã bỏ mạng trong chiến đấu, khác với hết thọ. */
   killed: boolean;
+  /** Máu hiện tại. Bỏ trống nghĩa là đầy. */
+  hp?: number;
+  /** Thương nặng: máu chỉ hồi tới 30%, thua thêm trận nữa là bỏ mạng. Bế quan một năm thì khỏi. */
+  injured: boolean;
+  /** Những tu sĩ đã gặp: đạo hữu hoặc kẻ thù. */
+  relations: Relation[];
+  /** Số lần đã săn dị thú ở từng nơi trong năm hiện tại. */
+  hunts: Record<string, { year: number; count: number }>;
   /** Các sự kiện đang hiện trên bản đồ. */
   events: ActiveEvent[];
+}
+
+export interface Relation {
+  name: string;
+  /** Bậc cảnh giới của người đó (0 là phàm nhân). */
+  level: number;
+  /** la: người lạ, ban: đạo hữu, thu: kẻ thù. */
+  status: 'la' | 'ban' | 'thu';
 }
 
 export interface ActiveEvent {
@@ -83,6 +99,9 @@ export function loadSave(): SaveData {
           save.life.events ??= [];
           save.life.origin ??= 'thuongDan';
           save.life.killed ??= false;
+          save.life.injured ??= false;
+          save.life.relations ??= [];
+          save.life.hunts ??= {};
         }
         return save;
       }

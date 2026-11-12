@@ -15,11 +15,24 @@ import {
 } from '../data/map';
 import { PATHS, STAT_LABELS, type Stats } from '../data/paths';
 import { loadSave, writeSave, type Life, type SaveData } from '../state/save';
+import {
+  createBeasts,
+  createNpc,
+  createNpcParty,
+  currentHp,
+  healBySeclusion,
+  HUNT_DAYS,
+  huntsLeft,
+  maxHp,
+  npcAsEnemy,
+  npcRank,
+  recover,
+  useHunt,
+} from '../systems/battle';
 import { energyRequired, isAtPeak, isBreakthrough, realmName } from '../systems/cultivation';
 import { canChoose, refreshEvents, resolveChoice, successChance } from '../systems/events';
 import {
   ageYears,
-  arrivalHazard,
   attemptAdvance,
   breakthroughChance,
   breakthroughCost,
@@ -36,6 +49,7 @@ import {
   work,
 } from '../systems/life';
 import { button, formatNumber, hexColor, label, pin } from '../ui/widgets';
+import type { BattleSetup } from './BattleScene';
 import { drawTerrain, SEA_COLOR } from './mapArt';
 
 const HUD_HEIGHT = 190;
@@ -68,6 +82,8 @@ export class MapScene extends Phaser.Scene {
   private dateText!: Phaser.GameObjects.Text;
   private realmText!: Phaser.GameObjects.Text;
   private ageText!: Phaser.GameObjects.Text;
+  private hpText!: Phaser.GameObjects.Text;
+  private daysSeen = 0;
   private energyText!: Phaser.GameObjects.Text;
   private barFill!: Phaser.GameObjects.Rectangle;
   private panel: Destroyable[] = [];
@@ -100,6 +116,7 @@ export class MapScene extends Phaser.Scene {
       isNewLife = true;
     }
     this.life = this.save.life;
+    this.daysSeen = this.life.days;
     this.selected = this.life.location;
     refreshEvents(this.life);
     writeSave(this.save);
@@ -115,6 +132,12 @@ export class MapScene extends Phaser.Scene {
     this.renderPanel();
     if (isNewLife) this.showIntro();
     else if (isDead(this.life)) this.endLife();
+    else {
+      // Lời nhắn để lại từ màn hình khác, ví dụ kết quả một trận đấu.
+      const note = this.registry.get('mapNote') as string | undefined;
+      if (note) this.toast(note);
+    }
+    this.registry.remove('mapNote');
   }
 
   private get zoom(): number {
@@ -335,11 +358,12 @@ export class MapScene extends Phaser.Scene {
     const line = this.add.rectangle(cx, HUD_HEIGHT, GAME_WIDTH, 2, 0xffffff, 0.15);
     this.dateText = label(this, 24, 34, '', 24, '#8a94a8').setOrigin(0, 0.5);
     this.realmText = label(this, 24, 80, '', 36).setOrigin(0, 0.5);
-    this.ageText = label(this, 24, 124, '', 24, '#ffd36b').setOrigin(0, 0.5);
-    const barBack = this.add.rectangle(24, 162, BAR_WIDTH, 16, 0x1c2740, 1).setOrigin(0, 0.5);
-    this.barFill = this.add.rectangle(24, 162, BAR_WIDTH, 16, color, 1).setOrigin(0, 0.5);
-    this.energyText = label(this, 24 + BAR_WIDTH + 14, 162, '', 20, '#c9d4e8').setOrigin(0, 0.5);
-    pin([bg, line, this.dateText, this.realmText, this.ageText, barBack, this.barFill, this.energyText]);
+    this.ageText = label(this, 24, 118, '', 22, '#ffd36b').setOrigin(0, 0.5);
+    this.hpText = label(this, 24, 146, '', 20, '#9dffb0').setOrigin(0, 0.5);
+    const barBack = this.add.rectangle(24, 173, BAR_WIDTH, 14, 0x1c2740, 1).setOrigin(0, 0.5);
+    this.barFill = this.add.rectangle(24, 173, BAR_WIDTH, 14, color, 1).setOrigin(0, 0.5);
+    this.energyText = label(this, 24 + BAR_WIDTH + 14, 173, '', 19, '#c9d4e8').setOrigin(0, 0.5);
+    pin([bg, line, this.dateText, this.realmText, this.ageText, this.hpText, barBack, this.barFill, this.energyText]);
 
     const back = button(this, GAME_WIDTH - 100, 46, 170, 56, 'Bản thể', 0xc9d4e8, () => {
       if (this.busy) return;
@@ -359,15 +383,22 @@ export class MapScene extends Phaser.Scene {
     this.dateText.setText(`Kiếp thứ ${life.index}  ·  ${dateLabel(life)}`);
     this.realmText.setText(realmName(life));
     this.ageText.setText(`Tuổi ${ageYears(life)} / ${lifespan(life)}   ·   Linh thạch ${life.linhThach}`);
+    const friends = life.relations.filter((item) => item.status === 'ban').length;
+    const foes = life.relations.filter((item) => item.status === 'thu').length;
+    this.hpText
+      .setText(
+        `Máu ${currentHp(life)} / ${maxHp(life)}${life.injured ? '  ·  THƯƠNG NẶNG' : ''}   ·   Đạo hữu ${friends}  ·  Kẻ thù ${foes}`,
+      )
+      .setColor(life.injured ? '#ff8a8a' : '#9dffb0');
     this.refreshDanger();
     if (isAtPeak(life)) {
-      this.barFill.setDisplaySize(BAR_WIDTH, 16);
+      this.barFill.setDisplaySize(BAR_WIDTH, 14);
       this.energyText.setText(formatNumber(life.energy));
       return;
     }
     const required = energyRequired(life);
     const ratio = Phaser.Math.Clamp(life.energy / required, 0, 1);
-    this.barFill.setDisplaySize(Math.max(BAR_WIDTH * ratio, 1), 16);
+    this.barFill.setDisplaySize(Math.max(BAR_WIDTH * ratio, 1), 14);
     this.energyText.setText(`${formatNumber(life.energy)} / ${formatNumber(required)}`);
   }
 
@@ -453,6 +484,15 @@ export class MapScene extends Phaser.Scene {
     if (canWorkAt(place)) {
       actions.push({ text: 'Làm thuê 1 năm', color: 0xc9d4e8, enabled: true, run: () => this.doWork() });
     }
+    if (place.type === 'beast') {
+      const left = huntsLeft(this.life, place.id);
+      actions.push({
+        text: `Săn dị thú · còn ${left}`,
+        color: 0xe05d5d,
+        enabled: left > 0,
+        run: () => this.doHunt(place),
+      });
+    }
     actions.push({
       text: isAtPeak(this.life) ? 'Đỉnh Nhân giới' : major ? 'Đột phá' : 'Lên giai đoạn',
       color,
@@ -505,18 +545,7 @@ export class MapScene extends Phaser.Scene {
         this.life.days += days;
         this.selected = destination.id;
         this.busy = false;
-        const hazard = arrivalHazard(this.life, destination);
-        if (hazard) {
-          this.cameras.main.shake(400, 0.015);
-          this.cameras.main.flash(300, 255, 90, 90);
-        }
-        this.afterTimePassed(
-          hazard?.killed
-            ? 'Bị tập kích'
-            : hazard
-              ? `Bị dị thú tập kích: dưỡng thương ${hazard.injuryDays} ngày`
-              : `Đi mất ${days} ngày`,
-        );
+        this.arrive(destination, days);
         return;
       }
       const target = points[index];
@@ -536,8 +565,152 @@ export class MapScene extends Phaser.Scene {
   private doSeclude(months: number, place: Place): void {
     if (this.busy) return;
     const gain = seclude(this.life, months, place.linhKhi);
+    const cured = healBySeclusion(this.life, months);
     this.cameras.main.flash(250, 95, 224, 194);
-    this.afterTimePassed(`+${formatNumber(gain)} ${PATHS[this.life.path].energyName.toLowerCase()}`);
+    const energyName = PATHS[this.life.path].energyName.toLowerCase();
+    this.afterTimePassed(`+${formatNumber(gain)} ${energyName}${cured ? '  ·  thương thế đã lành' : ''}`);
+  }
+
+  private doHunt(place: Place): void {
+    if (this.busy || huntsLeft(this.life, place.id) <= 0) return;
+    useHunt(this.life, place.id);
+    recover(this.life, HUNT_DAYS);
+    this.startBattle({
+      enemies: createBeasts(place.danger),
+      intro: `Sau ${HUNT_DAYS} ngày lần theo dấu vết ở ${place.name}, ngươi tìm thấy con mồi. Nó cũng thấy ngươi.`,
+    });
+  }
+
+  private startBattle(setup: BattleSetup): void {
+    this.daysSeen = this.life.days;
+    writeSave(this.save);
+    this.scene.start('Battle', setup);
+  }
+
+  /** Tới nơi rồi mới biết có gì đang chờ: kẻ thù phục kích, dị thú tập kích, hay một tu sĩ lạ. */
+  private arrive(destination: Place, days: number): void {
+    recover(this.life, this.life.days - this.daysSeen);
+    this.daysSeen = this.life.days;
+    const level = dangerLevel(destination, this.life.tier);
+
+    const foe = this.life.relations.find((item) => item.status === 'thu');
+    if (foe && days >= 5 && Math.random() < 0.12) {
+      this.startBattle({
+        enemies: createNpcParty(foe),
+        intro: `${foe.name} đã chờ sẵn trên đường tới ${destination.name}: "Món nợ cũ, hôm nay tính."`,
+        npc: foe,
+      });
+      return;
+    }
+    if (Math.random() < [0, 0.08, 0.3, 0.55][level]) {
+      this.startBattle({
+        enemies: createBeasts(destination.danger),
+        intro: `Vừa đặt chân tới ${destination.name}, ngươi đã bị dị thú vây lấy.`,
+      });
+      return;
+    }
+    if (days >= 10 && Math.random() < 0.2) {
+      this.meetCultivator(destination, days);
+      return;
+    }
+    this.afterTimePassed(`Đi mất ${days} ngày`);
+  }
+
+  private meetCultivator(destination: Place, days: number): void {
+    const life = this.life;
+    const friend = life.relations.find((item) => item.status === 'ban');
+    if (friend && Math.random() < 0.35) {
+      const gift = 10 + friend.level * 10;
+      life.linhThach += gift;
+      this.inform(
+        'Gặp lại đạo hữu',
+        `Trên đường tới ${destination.name}, ngươi gặp lại ${friend.name}. Hai người ngồi uống trà nói chuyện cũ. Lúc chia tay, người đó dúi cho ngươi một túi nhỏ.`,
+        `Linh thạch +${gift}`,
+        () => this.afterTimePassed(`Đi mất ${days} ngày`),
+      );
+      return;
+    }
+
+    const npc = createNpc(life.tier + Math.floor(Math.random() * 3) - 1);
+    const chance = Phaser.Math.Clamp(0.5 + (life.stats.ngoTinh - 5) * 0.05 + (life.stats.thanThuc - 5) * 0.03, 0.1, 0.95);
+    this.choose(
+      'Người lạ trên đường',
+      destination.name,
+      `Trên đường tới ${destination.name}, ngươi gặp ${npc.name}, một ${npcRank(npc)}. Người đó dừng bước, cũng đang nhìn ngươi dò xét.`,
+      [
+        {
+          text: `Chắp tay kết giao  ·  ${Math.round(chance * 100)}%`,
+          run: () => {
+            if (Math.random() < chance) {
+              const gain = 20 + npc.level * 15;
+              life.relations.push({ ...npc, status: 'ban' });
+              life.energy += gain;
+              this.inform(
+                'Kết giao',
+                `${npc.name} đáp lễ. Hai người đi chung một đoạn đường, trao đổi tâm đắc tu luyện. Từ nay ngươi có thêm một đạo hữu.`,
+                `${PATHS[life.path].energyName} +${gain}`,
+                () => this.afterTimePassed(`Đi mất ${days} ngày`),
+              );
+            } else {
+              this.inform('Kết giao', `${npc.name} liếc ngươi một cái rồi bỏ đi, không nói nửa lời.`, 'Không có gì thay đổi', () =>
+                this.afterTimePassed(`Đi mất ${days} ngày`),
+              );
+            }
+          },
+        },
+        {
+          text: 'Ra tay cướp đoạt',
+          run: () =>
+            this.startBattle({
+              enemies: [npcAsEnemy(npc)],
+              intro: `Ngươi ra tay trước. ${npc.name} lùi nửa bước, rút vũ khí.`,
+              npc,
+            }),
+        },
+        { text: 'Gật đầu rồi đi tiếp', run: () => this.afterTimePassed(`Đi mất ${days} ngày`) },
+      ],
+    );
+  }
+
+  private choose(
+    title: string,
+    subtitle: string,
+    text: string,
+    options: { text: string; run: () => void }[],
+  ): void {
+    const cx = GAME_WIDTH / 2;
+    this.dialog((add, close) => {
+      const heading = label(this, cx, 250, title, 40, '#ffd36b');
+      const where = label(this, cx, 305, subtitle, 22, '#8a94a8');
+      const body = label(this, cx, 350, text, 27, '#e8f0ff').setOrigin(0.5, 0);
+      body.setWordWrapWidth(620).setLineSpacing(8);
+      pin([heading, where, body], 201).forEach(add);
+      options.forEach((option, index) => {
+        const item = button(this, cx, 760 + index * 92, 660, 76, option.text, 0xc9d4e8, () => {
+          close();
+          option.run();
+        }, 22);
+        pin(item.objects, 202);
+        add(item);
+      });
+    });
+  }
+
+  private inform(title: string, text: string, effects: string, then: () => void): void {
+    const cx = GAME_WIDTH / 2;
+    this.dialog((add, close) => {
+      const heading = label(this, cx, 300, title, 40, '#ffd36b');
+      const body = label(this, cx, 400, text, 28, '#e8f0ff').setOrigin(0.5, 0);
+      body.setWordWrapWidth(620).setLineSpacing(8);
+      const result = label(this, cx, 760, effects, 26, '#9dffb0');
+      pin([heading, body, result], 201).forEach(add);
+      const next = button(this, cx, 880, 420, 84, 'Tiếp tục', PATHS[this.life.path].color, () => {
+        close();
+        then();
+      });
+      pin(next.objects, 202);
+      add(next);
+    });
   }
 
   private doWork(): void {
@@ -578,6 +751,8 @@ export class MapScene extends Phaser.Scene {
   }
 
   private afterTimePassed(message: string): void {
+    recover(this.life, this.life.days - this.daysSeen);
+    this.daysSeen = this.life.days;
     refreshEvents(this.life);
     writeSave(this.save);
     this.refreshHud();

@@ -42,7 +42,7 @@ Game có hai tầng chạy song song:
 - Đột phá bậc lớn có thể thất bại.
 - **Càng lên cao càng khó:** ở bậc nào cũng vậy, chỉ ngồi nhà thì tích đủ tu vi cho bậc kế tiếp mất khoảng 85-90% thọ nguyên còn lại; tỉ lệ đột phá giảm dần; mỗi lần đột phá tốn linh thạch, thành hay bại đều mất.
 - **Nơi sinh ngẫu nhiên:** mỗi kiếp sinh ra ở một nơi ngẫu nhiên trên thế giới (nhà, làng, chợ, bến), nơi càng nguy hiểm càng hiếm gặp. Khi đủ điểm luân hồi mới được chọn nơi sinh.
-- **Mức nguy hiểm:** mọi châu đều đi được, nhưng mỗi nơi có mức nguy hiểm so với bậc của mình (an toàn, ngang sức, nguy hiểm, tử địa). Tới nơi nguy hiểm có thể bị tập kích phải dưỡng thương; tới tử địa có thể bỏ mạng. Sự kiện ở nơi nguy hiểm cũng khó thành hơn.
+- **Mức nguy hiểm:** mọi nơi đều đi được, nhưng mỗi nơi có mức nguy hiểm so với bậc của mình (an toàn, ngang sức, nguy hiểm, tử địa). Nơi càng nguy hiểm càng dễ bị dị thú tập kích khi vừa tới, và sự kiện ở đó cũng khó thành hơn.
 - Hết thọ hoặc chết trong bí cảnh thì kiếp kết thúc, hồn về bản thể và nhận điểm luân hồi.
 - Bản thể ở giới nào thì các kiếp bắt đầu ở giới đó (bản thể lên Linh giới thì kiếp ở Linh giới).
 
@@ -175,10 +175,29 @@ Linh khí từng nơi ghi trong `src/data/map.ts`: trong thành ×0,8-1,5; các 
 - Màu viền báo mức nguy hiểm so với sức mình.
 - Mỗi địa điểm có việc thường nhật giới hạn số lần (săn dị thú, thăm dò).
 
-## 10b. Các hệ thống khác (đề xuất)
+## 10b. Chiến đấu
 
-- **Chiến đấu:** theo lượt, một đấu một ở bản đầu. Đánh thường, kỹ năng, phòng thủ, vật phẩm.
-- **Giải đố:** cửa ải mở bí cảnh, phá trận pháp, vượt tâm ma. Loại câu đố chưa quyết định.
+**Đã chốt:**
+
+- Theo lượt. Một mình có thể phải đấu với một, hai, ba hoặc bốn kẻ địch.
+- Thua trận thì **thương nặng**. Đang thương nặng mà không bế quan chữa, lại đánh tiếp và thua nữa thì **chết**.
+- Người tu luyện khác (NPC) có đủ mọi thứ như một người chơi; tùy sự kiện mà kết đạo hay thành thù oán.
+
+**Bản hiện tại:**
+
+- Bốn hành động: đánh thường, kỹ năng của nhánh (pháp thuật, trọng quyền, dị năng; dùng xong chờ 3 lượt), phòng thủ (giảm 60% sát thương lượt đó), bỏ chạy (tỉ lệ theo Thân pháp).
+- Số địch mỗi trận: một con 60%, hai con 25%, ba con 10%, bốn con 5%.
+- Máu tính từ Thể chất và bậc. Máu tự hồi 1% mỗi ngày. Thương nặng thì máu chỉ hồi tới 30%; bế quan từ một năm trở lên mới khỏi.
+- Thắng dị thú được linh thạch và tu vi (hấp thụ dị hạch). Thắng tu sĩ được nhiều linh thạch hơn.
+- **Săn dị thú** ở vùng dị thú: mỗi nơi 3 lần mỗi năm, mỗi lần mất 15 ngày.
+- **Bị tập kích** khi tới nơi nguy hiểm: ngang sức 8%, nguy hiểm 30%, tử địa 55%. Thay cho tỉ lệ bỏ mạng cũ: giờ chỉ chết khi thua trận lúc đang thương nặng, hoặc hết thọ.
+- **Gặp tu sĩ lạ** trên đường xa (20%): kết giao (thành đạo hữu, được chỉ điểm), ra tay cướp đoạt (đánh nhau, thành kẻ thù), hoặc bỏ qua. Đạo hữu gặp lại thì tặng linh thạch. Kẻ thù có 12% phục kích trên mỗi chặng đường, có thể kéo theo đồng bọn.
+
+**Chưa làm:** NPC có cảnh giới, tuổi thọ, hành trình riêng; bái sư, giao dịch, kết đạo lữ; trang bị và pháp bảo; đan dược dùng trong trận; danh sách nhân mạch.
+
+## 10c. Giải đố (đề xuất)
+
+- Cửa ải mở bí cảnh, phá trận pháp, vượt tâm ma. Loại câu đố chưa quyết định.
 
 ## 11. Chơi hai người (đã chốt)
 
